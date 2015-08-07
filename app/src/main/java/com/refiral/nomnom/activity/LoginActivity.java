@@ -59,7 +59,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener{
                     break;
                 }
                 /* TODO:
-                    Send phone number to server and on success start HomeActivity
+                    Send phone number to server and on success set alarm to get location every five minutes and register for gcm
                   */
                 break;
             }

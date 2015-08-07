@@ -5,14 +5,15 @@ package com.refiral.nomnom.config;
  */
 public class Constants {
 
-    public class Global {
+    public class Keys {
         public static final String PREF_NAME = "nonomPrefs";
-        public static final String BASE_URL = "";
-        public static final String KEY_STARTER_CLASS = "starterClass";
+        public static final String STARTER_CLASS = "starterClass";
+        public static final String KEY_ACCESS_TOKEN = "accessToken";
+        public static final String KEY_ORDER_ID = "order_id";
     }
 
-    public class Login {
-        public static final String KEY_ACCESS_TOKEN = "accessToken";
+    public class Urls {
+        public static final String BASE_URL = "";
     }
 
     public class Regex {

@@ -14,19 +14,19 @@ public class Router {
 
     public static void startLoginActivity(Context context, String className) {
         Intent intent = new Intent(context, LoginActivity.class);
-        intent.putExtra(Constants.Global.KEY_STARTER_CLASS,className);
+        intent.putExtra(Constants.Keys.STARTER_CLASS,className);
         context.startActivity(intent);
     }
 
     public static void startHomeActivity(Context context, String className) {
         Intent intent = new Intent(context, HomeActivity.class);
-        intent.putExtra(Constants.Global.KEY_STARTER_CLASS,className);
+        intent.putExtra(Constants.Keys.STARTER_CLASS,className);
         context.startActivity(intent);
     }
 
     public static void startSOSActivity(Context context, String className) {
         Intent intent = new Intent(context, SOSActivity.class);
-        intent.putExtra(Constants.Global.KEY_STARTER_CLASS,className);
+        intent.putExtra(Constants.Keys.STARTER_CLASS,className);
         context.startActivity(intent);
     }
 

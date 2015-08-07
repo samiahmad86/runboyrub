@@ -8,6 +8,9 @@
     <uses-permission android:name="ANDROID.PERMISSION.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="ANDROID.PERMISSION.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="ANDROID.PERMISSION.CALL_PHONE"/>
 
     <!-- Creates a custom permission so only this app can receive its messages. -->
     <permission

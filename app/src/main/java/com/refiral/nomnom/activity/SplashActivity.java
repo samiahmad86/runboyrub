@@ -18,7 +18,7 @@ public class SplashActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        // if orienatation change has trigged this then do not redraw the activity
+        // if orientation change has trigged this then do not redraw the activity
         if(savedInstanceState != null) {
             return;
         }
