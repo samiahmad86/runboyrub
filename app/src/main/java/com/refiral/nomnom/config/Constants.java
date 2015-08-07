@@ -14,4 +14,8 @@ public class Constants {
     public class Login {
         public static final String KEY_ACCESS_TOKEN = "accessToken";
     }
+
+    public class Regex {
+        public static final String NUMBER = "^[789]\\d{9}$";
+    }
 }

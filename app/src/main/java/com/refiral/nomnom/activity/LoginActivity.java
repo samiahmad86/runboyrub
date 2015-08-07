@@ -4,15 +4,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.refiral.nomnom.R;
+import com.refiral.nomnom.config.Constants;
 
-public class LoginActivity extends BaseActivity {
+public class LoginActivity extends BaseActivity implements View.OnClickListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        if(savedInstanceState != null) {
+            return;
+        }
+
+        findViewById(R.id.btn_login).setOnClickListener(this);
+
     }
 
     @Override
@@ -35,5 +46,23 @@ public class LoginActivity extends BaseActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View view) {
+        int id = view.getId();
+        switch (id) {
+            case R.id.btn_login: {
+                String phoneNumber = ((EditText) findViewById(R.id.et_login_number)).getText().toString();
+                if(!phoneNumber.matches(Constants.Regex.NUMBER)) {
+                    Toast.makeText(LoginActivity.this, "Enter a valid phone number", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+                /* TODO:
+                    Send phone number to server and on success start HomeActivity
+                  */
+                break;
+            }
+        }
     }
 }
