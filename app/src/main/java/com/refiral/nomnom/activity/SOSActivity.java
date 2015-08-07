@@ -6,35 +6,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.refiral.nomnom.R;
-import com.refiral.nomnom.config.Router;
-import com.refiral.nomnom.util.PrefUtils;
 
-public class SplashActivity extends BaseActivity {
-
-    public static final String TAG = SplashActivity.class.getName();
+public class SOSActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash);
-
-        // if orienatation change has trigged this then do not redraw the activity
-        if(savedInstanceState != null) {
-            return;
-        }
-
-        if(isUserLoggedIn()) {
-            Router.startHomeActivity(SplashActivity.this, TAG);
-        } else {
-            Router.startLoginActivity(SplashActivity.this, TAG);
-        }
-
+        setContentView(R.layout.activity_sos);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_splash, menu);
+        getMenuInflater().inflate(R.menu.menu_so, menu);
         return true;
     }
 
@@ -51,12 +35,5 @@ public class SplashActivity extends BaseActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-
-    //////////////////////// private methods ////////////////////////////
-
-    private boolean isUserLoggedIn() {
-        return PrefUtils.getAccessToken() != null;
     }
 }
