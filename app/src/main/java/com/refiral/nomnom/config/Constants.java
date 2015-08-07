@@ -8,8 +8,9 @@ public class Constants {
     public class Keys {
         public static final String PREF_NAME = "nonomPrefs";
         public static final String STARTER_CLASS = "starterClass";
-        public static final String KEY_ACCESS_TOKEN = "accessToken";
+        public static final String KEY_ACCESS_TOKEN = "access_token";
         public static final String KEY_ORDER_ID = "order_id";
+        public static final String KEY_DEVICE_ID = "device_id";
     }
 
     public class Urls {
