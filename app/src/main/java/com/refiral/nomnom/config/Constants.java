@@ -7,6 +7,7 @@ public class Constants {
 
     public class Global {
         public static final String PREF_NAME = "nonomPrefs";
+        public static final String BASE_URL = "";
     }
 
     public class Login {
