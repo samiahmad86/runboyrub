@@ -13,6 +13,7 @@ public class LogoutRequest extends RetrofitSpiceRequest<SimpleResponse, APIInter
 
     public LogoutRequest(String accessToken) {
         super(SimpleResponse.class, APIInterface.class);
+        this.accessToken = accessToken;
     }
 
     public SimpleResponse loadDataFromNetwork() {

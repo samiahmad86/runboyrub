@@ -18,6 +18,9 @@ public class LoginRequest extends RetrofitSpiceRequest<LoginResponse, APIInterfa
     public LoginRequest(String contactNumber, String deviceId, String pushId, String deviceType) {
         super(LoginResponse.class, APIInterface.class);
         this.contactNumber = contactNumber;
+        this.mDeviceID = deviceId;
+        this.mPushID = pushId;
+        this.mDeviceType = deviceType;
     }
 
     public LoginResponse loadDataFromNetwork() {
