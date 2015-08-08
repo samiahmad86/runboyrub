@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.refiral.nomnom.R;
 import com.refiral.nomnom.config.Constants;
+import com.refiral.nomnom.service.CustomIntentService;
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener{
 
@@ -58,9 +59,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener{
                     Toast.makeText(LoginActivity.this, "Enter a valid phone number", Toast.LENGTH_SHORT).show();
                     break;
                 }
-                /* TODO:
-                    Send phone number to server and on success set alarm to get location every five minutes and register for gcm
-                  */
+                CustomIntentService.loginUser(this, phoneNumber);
                 break;
             }
         }

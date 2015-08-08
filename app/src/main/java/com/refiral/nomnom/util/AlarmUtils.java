@@ -15,7 +15,7 @@ public class AlarmUtils {
 
     public static void setRepeatingAlarm(Context context, PendingIntent pendingIntent, long duration) {
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, FIVE_MINUTES, FIVE_MINUTES, pendingIntent);
+        am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, duration, duration, pendingIntent);
     }
 
     public static void cancelAlarm(Context context, PendingIntent intent) {

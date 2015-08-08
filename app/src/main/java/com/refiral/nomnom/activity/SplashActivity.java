@@ -7,6 +7,7 @@ import android.view.MenuItem;
 
 import com.refiral.nomnom.R;
 import com.refiral.nomnom.config.Router;
+import com.refiral.nomnom.service.CustomIntentService;
 import com.refiral.nomnom.util.PrefUtils;
 
 public class SplashActivity extends BaseActivity {
@@ -22,6 +23,8 @@ public class SplashActivity extends BaseActivity {
         if(savedInstanceState != null) {
             return;
         }
+
+        CustomIntentService.registerGCM(this);
 
         if(isUserLoggedIn()) {
             Router.startHomeActivity(SplashActivity.this, TAG);

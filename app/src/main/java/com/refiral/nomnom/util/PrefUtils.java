@@ -26,4 +26,12 @@ public class PrefUtils {
     public static void setAccessToken(String accessToken) {
         mEditor.putString(Constants.Keys.KEY_ACCESS_TOKEN, accessToken).commit();
     }
+
+    public static void setGcmToken(String token) {
+        mEditor.putString(Constants.Keys.KEY_PUSH_ID, token).commit();
+    }
+
+    public static String getGcmToken() {
+        return mSharedPrefs.getString(Constants.Keys.KEY_PUSH_ID, null);
+    }
 }

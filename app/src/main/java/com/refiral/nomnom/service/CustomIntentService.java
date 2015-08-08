@@ -6,11 +6,22 @@ import android.content.Intent;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
+import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
+import com.octo.android.robospice.SpiceManager;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
 import com.refiral.nomnom.R;
 import com.refiral.nomnom.config.Constants;
+import com.refiral.nomnom.model.LoginResponse;
+import com.refiral.nomnom.model.SimpleResponse;
+import com.refiral.nomnom.request.LocationRequest;
+import com.refiral.nomnom.request.LoginRequest;
+import com.refiral.nomnom.util.AlarmUtils;
+import com.refiral.nomnom.util.DeviceUtils;
+import com.refiral.nomnom.util.PrefUtils;
 
 import java.io.IOException;
 
@@ -24,9 +35,14 @@ import java.io.IOException;
  */
 public class CustomIntentService extends IntentService {
     // The actions the intent service can perform
-    private static final String ACTION_LOC = "com.refiral.nomnom.receiver.action.LOC";
-    private static final String ACTION_GCM = "com.refiral.nomnom.receiver.action.GCM";
-    private static final String ACTION_ORDER = "com.refiral.nomnom.receiver.action.ORDER";
+    private static final String ACTION_LOC = "com.refiral.nomnom.service.action.LOC";
+    private static final String ACTION_GCM = "com.refiral.nomnom.service.action.GCM";
+    private static final String ACTION_ORDER = "com.refiral.nomnom.service.action.ORDER";
+    private static final String ACTION_LOGIN = "com.refiral.nomnom.service.action.LOGIN";
+
+    private SpiceManager mSpiceManager = new SpiceManager(APIService.class);
+
+    private static final String TAG = CustomIntentService.class.getName();
 
     /**
      * Returns Pending Intent for alarm to check for location. If
@@ -60,12 +76,23 @@ public class CustomIntentService extends IntentService {
         context.startService(intent);
     }
 
+    /*
+        Start this service to login the user
+     */
+    public static void loginUser(Context context, String phoneNumber) {
+        Intent intent = new Intent(context, CustomIntentService.class);
+        intent.setAction(ACTION_LOGIN);
+        intent.putExtra(Constants.Keys.KEY_CONTACT_NUMBER, phoneNumber);
+        context.startService(intent);
+    }
+
     public CustomIntentService() {
         super("CustomIntentService");
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_LOC.equals(action)) {
@@ -74,19 +101,56 @@ public class CustomIntentService extends IntentService {
                 registerGCM();
             } else if(ACTION_ORDER.equals(action)) {
                 getOrderDetails(intent.getIntExtra(Constants.Keys.KEY_ORDER_ID, -1));
+            } else if(ACTION_LOGIN.equals(action)) {
+                registerUser(intent.getStringExtra(Constants.Keys.KEY_CONTACT_NUMBER));
             }
         }
     }
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mSpiceManager.start(CustomIntentService.this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mSpiceManager.shouldStop();
+    }
+
     /**
-     * Register the GCM ID of the user at the server.
+     * Log in the user
+     */
+    private void registerUser(String phoneNumber) {
+        LoginRequest mLoginRequest = new LoginRequest(phoneNumber, DeviceUtils.getDeviceID(CustomIntentService.this), PrefUtils.getGcmToken(), "Android");
+        mSpiceManager.execute(mLoginRequest, new RequestListener<LoginResponse>() {
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                // fuck this shit
+                Log.d(TAG, "failed to login");
+            }
+
+            @Override
+            public void onRequestSuccess(LoginResponse loginResponse) {
+                // store the access token
+                PrefUtils.setAccessToken(loginResponse.accessToken);
+                Log.d(TAG, loginResponse.accessToken);
+                // once the user has logged in set alarm for location updates
+                AlarmUtils.setRepeatingAlarm(CustomIntentService.this, getLocationPendingIntent(CustomIntentService.this, 0), AlarmUtils.FIVE_MINUTES);
+            }
+        });
+    }
+
+    /**
+     * Get the GCM ID of the user and save it.
      */
     private void registerGCM() {
         try {
             InstanceID instanceID = InstanceID.getInstance(this);
             String token = instanceID.getToken(getString(R.string.gcm_sender_id),
                     GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
-            // TODO: Send the token to the server
+            PrefUtils.setGcmToken(token);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -99,8 +163,18 @@ public class CustomIntentService extends IntentService {
 
         LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        // TODO: Send the location to the server
+        LocationRequest  lr = new LocationRequest(location.getLatitude(), location.getLongitude(), PrefUtils.getAccessToken());
+        mSpiceManager.execute(lr, new RequestListener<SimpleResponse>() {
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                Log.d(TAG, "failed to send location");
+            }
 
+            @Override
+            public void onRequestSuccess(SimpleResponse simpleResponse) {
+                Log.d(TAG, "location updateded successfully");
+            }
+        });
     }
 
     /*

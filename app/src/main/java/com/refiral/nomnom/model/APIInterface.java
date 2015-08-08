@@ -16,7 +16,7 @@ import retrofit.http.Query;
 public interface APIInterface {
 
     @GET("/agent_login")
-    LoginResponse login(@Header(Constants.Keys.KEY_DEVICE_ID) String mDeviceID, @Header(Constants.Keys.KEY_DEVICE_TYPE) String mDeviceTpe, @Header(Constants.Keys.KEY_PUSH_ID) String mPushID, @Query("contact_number") String contactNumber);
+    LoginResponse login(@Header(Constants.Keys.KEY_DEVICE_ID) String mDeviceID, @Header(Constants.Keys.KEY_DEVICE_TYPE) String mDeviceTpe, @Header(Constants.Keys.KEY_PUSH_ID) String mPushID, @Query(Constants.Keys.KEY_CONTACT_NUMBER) String contactNumber);
 
     @DELETE("/agent_logout")
     SimpleResponse logout(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken);

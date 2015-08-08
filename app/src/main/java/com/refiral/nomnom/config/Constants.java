@@ -18,6 +18,7 @@ public class Constants {
         public static final String KEY_PAYMENT_CASH = "payment_cash";
         public static final String KEY_LATITUDE = "latitude";
         public static final String KEY_LONGITUDE = "longitude";
+        public static final String KEY_CONTACT_NUMBER = "contact_number";
     }
 
     public class Urls {
