@@ -10,5 +10,5 @@
     <string name="enter_number">Enter your number</string>
     <string name="login">LOGIN</string>
     <string name="action_logout">LOGOUT</string>
-    <string name="action_media">com.refiral.nomnom.media</string>
+    <string name="intent_filter_media">com.refiral.nomnom.media</string>
 </resources>

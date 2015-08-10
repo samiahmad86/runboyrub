@@ -65,10 +65,12 @@ public class CustomService extends Service implements GoogleApiClient.Connection
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy called");
-        mGoogleApiClient.disconnect();
-        if (spiceManager.isStarted())
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+        if (spiceManager.isStarted()) {
             spiceManager.shouldStop();
-
+        }
     }
 
     @Override

@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,9 +42,7 @@ public class HomeActivity extends BaseActivity {
         if (previousClassName.equals(CustomService.TAG)) {
             Log.d(TAG, "stopping media playback");
             // stop the service to play the song
-            Intent iMediaService = new Intent(getApplicationContext(), MediaService.class);
-            iMediaService.setAction(TAG);
-            startService(iMediaService);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(getResources().getString(R.string.intent_filter_media)));
             NotificationManager mNotificationManager =
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             mNotificationManager.cancel(1);
