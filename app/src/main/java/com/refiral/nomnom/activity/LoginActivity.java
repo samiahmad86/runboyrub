@@ -1,31 +1,41 @@
 package com.refiral.nomnom.activity;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
 import com.refiral.nomnom.R;
 import com.refiral.nomnom.config.Constants;
-import com.refiral.nomnom.service.CustomIntentService;
+import com.refiral.nomnom.config.Router;
+import com.refiral.nomnom.model.LoginResponse;
+import com.refiral.nomnom.model.User;
+import com.refiral.nomnom.request.LoginRequest;
+import com.refiral.nomnom.util.DeviceUtils;
+import com.refiral.nomnom.util.PrefUtils;
 
-public class LoginActivity extends BaseActivity implements View.OnClickListener{
+public class LoginActivity extends BaseActivity implements View.OnClickListener {
+
+    private static final String TAG = LoginActivity.class.getName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
             return;
         }
 
         findViewById(R.id.btn_login).setOnClickListener(this);
 
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -55,13 +65,39 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener{
         switch (id) {
             case R.id.btn_login: {
                 String phoneNumber = ((EditText) findViewById(R.id.et_login_number)).getText().toString();
-                if(!phoneNumber.matches(Constants.Regex.NUMBER)) {
+                if (!phoneNumber.matches(Constants.Regex.NUMBER)) {
                     Toast.makeText(LoginActivity.this, "Enter a valid phone number", Toast.LENGTH_SHORT).show();
                     break;
                 }
-                CustomIntentService.loginUser(this, phoneNumber);
+                registerUser(phoneNumber);
                 break;
             }
         }
     }
+
+    private void registerUser(String phoneNumber) {
+        User user = new User(phoneNumber);
+        LoginRequest mLoginRequest = new LoginRequest(user, DeviceUtils.getDeviceID(this), PrefUtils.getGcmToken(), "Android");
+        Log.d(TAG, "creating the request");
+        getSpiceManager().execute(mLoginRequest, new RequestListener<LoginResponse>() {
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                // fuck this shit
+                Log.d(TAG, "failed to login");
+                Log.d(TAG, spiceException.getMessage());
+                Log.d(TAG, spiceException.getLocalizedMessage());
+            }
+
+            @Override
+            public void onRequestSuccess(LoginResponse loginResponse) {
+                // store the access token
+                PrefUtils.setAccessToken(loginResponse.authToken);
+                Log.d(TAG, loginResponse.authToken);
+                Router.startHomeActivity(LoginActivity.this, TAG);
+                LoginActivity.this.finish();
+            }
+        });
+
+    }
+
 }

@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.refiral.nomnom" >
+    package="com.refiral.nomnom">
 
-    <uses-permission android:name="ANDROID.PERMISSION.INTERNET" />
-    <uses-permission android:name="ANDROID.PERMISSION.GET_ACCOUNTS" />
-    <uses-permission android:name="ANDROID.PERMISSION.WAKE_LOCK" />
-    <uses-permission android:name="ANDROID.PERMISSION.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-    <uses-permission android:name="ANDROID.PERMISSION.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="ANDROID.PERMISSION.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <!-- Creates a custom permission so only this app can receive its messages. -->
     <permission
@@ -24,10 +24,10 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name=".activity.SplashActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -39,7 +39,7 @@
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"
-            android:permission="com.google.android.c2dm.permission.SEND" >
+            android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
 
@@ -48,23 +48,21 @@
         </receiver>
 
         <service
-            android:name=".service.CustomGcmListenerService"
-            android:exported="false" >
+            android:name=".service.CustomGCMListenerService"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
         <service
-            android:name=".service.GcmTokenRefreshService"
-            android:exported="false" >
+            android:name=".service.GCMTokenRefreshService"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
 
-        <receiver
-            android:name=".receiver.BootReceiver"
-            android:enabled="true" >
+        <receiver android:name=".receiver.BootReceiver">
             <action android:name="android.intent.action.BOOT_COMPLETED" />
 
             <category android:name="android.intent.category.DEFAULT" />
@@ -72,16 +70,30 @@
 
         <activity
             android:name=".activity.LoginActivity"
-            android:label="@string/title_activity_login" />
+            android:label="@string/title_activity_login"
+            android:windowSoftInputMode="stateVisible" />
 
         <service
-            android:name=".service.CustomIntentService"
+            android:name=".service.GCMRegisterIntentService"
+            android:exported="false" />
+        <service
+            android:name=".service.APIService"
             android:exported="false" />
 
         <activity
             android:name=".activity.SOSActivity"
-            android:label="@string/title_activity_sos" >
-        </activity>
+            android:label="@string/title_activity_sos" />
+        <activity
+            android:name=".activity.HomeActivity"
+            android:label="@string/app_name" />
+
+        <service
+            android:name=".service.CustomService"
+            android:exported="false" />
+        <service
+            android:name=".service.MediaService"
+            android:exported="false"></service>
+
     </application>
 
 </manifest>

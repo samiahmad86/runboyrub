@@ -8,19 +8,20 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.refiral.nomnom.activity.LoginActivity">
 
-    <AppCompatEditText
+    <android.support.v7.widget.AppCompatEditText
         android:id="@+id/et_login_number"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="number"
-        android:text="@string/enter_number"
+        android:hint="@string/enter_number"
         android:textSize="20sp" />
 
 
-    <AppCompatButton
+    <android.support.v7.widget.AppCompatButton
         android:id="@+id/btn_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:layout_below="@id/et_login_number"
         android:layout_marginTop="20dp"
         android:textSize="20sp"

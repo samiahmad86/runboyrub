@@ -27,4 +27,5 @@ public class APIService extends RetrofitGsonSpiceService {
         return Constants.Urls.BASE_URL;
     }
 
+
 }

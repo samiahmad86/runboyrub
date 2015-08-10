@@ -2,10 +2,11 @@ package com.refiral.nomnom.model;
 
 import com.refiral.nomnom.config.Constants;
 
+import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
-import retrofit.http.HEAD;
 import retrofit.http.Header;
+import retrofit.http.Headers;
 import retrofit.http.POST;
 import retrofit.http.PUT;
 import retrofit.http.Query;
@@ -15,22 +16,40 @@ import retrofit.http.Query;
  */
 public interface APIInterface {
 
-    @GET("/agent_login")
-    LoginResponse login(@Header(Constants.Keys.KEY_DEVICE_ID) String mDeviceID, @Header(Constants.Keys.KEY_DEVICE_TYPE) String mDeviceTpe, @Header(Constants.Keys.KEY_PUSH_ID) String mPushID, @Query(Constants.Keys.KEY_CONTACT_NUMBER) String contactNumber);
+    @Headers({
+            "Content-Type: application/json"
+    })
+    @POST("/agent_login/")
+    LoginResponse login(@Header(Constants.Keys.KEY_DEVICE_ID) String mDeviceID, @Header(Constants.Keys.KEY_DEVICE_TYPE) String mDeviceTpe, @Header(Constants.Keys.KEY_PUSH_ID) String mPushID, @Body User user);
 
-    @DELETE("/agent_logout")
+    @Headers({
+            "Content-Type: application/json"
+    })
+    @DELETE("/agent_logout/")
     SimpleResponse logout(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken);
 
-    @GET("/delivery")
+    @Headers({
+            "Content-Type: application/json"
+    })
+    @GET("/delivery/")
     Order getOrder(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken, @Query(Constants.Keys.KEY_ORDER_ID) int orderId);
 
-    @PUT("/delivery")
+    @Headers({
+            "Content-Type: application/json"
+    })
+    @PUT("/delivery/")
     SimpleResponse updateStatus(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken, @Query(Constants.Keys.KEY_ORDER_ID) int orderID, @Query(Constants.Keys.KEY_DELIVERY_STATUS) String deliveryStatus);
 
-    @PUT("/delivery")
+    @Headers({
+            "Content-Type: application/json"
+    })
+    @PUT("/delivery/")
     SimpleResponse updateStatus(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken, @Query(Constants.Keys.KEY_ORDER_ID) int orderID, @Query(Constants.Keys.KEY_DELIVERY_STATUS) String deliveryStatus, @Query(Constants.Keys.KEY_PAYMENT_CARD) String cardPayment, @Query(Constants.Keys.KEY_PAYMENT_CASH) String cashPayment);
 
-    @POST("/delivery_boy_location")
-    SimpleResponse updateLocation(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken, @Query(Constants.Keys.KEY_LATITUDE) double latitude, @Query(Constants.Keys.KEY_LONGITUDE) double longitue);
+    @Headers({
+            "Content-Type: application/json"
+    })
+    @POST("/delivery_boy_location/")
+    SimpleResponse updateLocation(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken, @Body DeliveryBoyLocation location);
 
 }

@@ -1,15 +1,16 @@
 package com.refiral.nomnom.activity;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.refiral.nomnom.R;
 import com.refiral.nomnom.config.Router;
-import com.refiral.nomnom.service.CustomIntentService;
-import com.refiral.nomnom.util.PrefUtils;
 
+
+/*
+    The launcher activity
+ */
 public class SplashActivity extends BaseActivity {
 
     public static final String TAG = SplashActivity.class.getName();
@@ -24,12 +25,10 @@ public class SplashActivity extends BaseActivity {
             return;
         }
 
-        CustomIntentService.registerGCM(this);
-
         if(isUserLoggedIn()) {
             Router.startHomeActivity(SplashActivity.this, TAG);
         } else {
-            Router.startLoginActivity(SplashActivity.this, TAG);
+            Router.registerGCM(this);
         }
 
     }
@@ -57,9 +56,4 @@ public class SplashActivity extends BaseActivity {
     }
 
 
-    //////////////////////// private methods ////////////////////////////
-
-    private boolean isUserLoggedIn() {
-        return PrefUtils.getAccessToken() != null;
     }
-}

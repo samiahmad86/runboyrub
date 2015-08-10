@@ -27,11 +27,23 @@ public class PrefUtils {
         mEditor.putString(Constants.Keys.KEY_ACCESS_TOKEN, accessToken).commit();
     }
 
+    public static void deleteAccessToken() {
+        mEditor.remove(Constants.Keys.KEY_ACCESS_TOKEN).commit();
+    }
+
     public static void setGcmToken(String token) {
         mEditor.putString(Constants.Keys.KEY_PUSH_ID, token).commit();
     }
 
     public static String getGcmToken() {
         return mSharedPrefs.getString(Constants.Keys.KEY_PUSH_ID, null);
+    }
+
+    public static void saveOrder(String orderJSON) {
+        mEditor.putString(Constants.Keys.KEY_ORDER, orderJSON).commit();
+    }
+
+    public static String getOrder() {
+        return mSharedPrefs.getString(Constants.Keys.KEY_ORDER, null);
     }
 }

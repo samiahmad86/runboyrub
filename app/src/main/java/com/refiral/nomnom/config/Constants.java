@@ -10,6 +10,7 @@ public class Constants {
         public static final String STARTER_CLASS = "starterClass";
         public static final String KEY_ACCESS_TOKEN = "token";
         public static final String KEY_ORDER_ID = "order_id";
+        public static final String KEY_ORDER = "order";
         public static final String KEY_DEVICE_ID = "X-Device-id";
         public static final String KEY_DEVICE_TYPE = "X-Device-Type";
         public static final String KEY_PUSH_ID = "X-Push-Id";
@@ -21,8 +22,12 @@ public class Constants {
         public static final String KEY_CONTACT_NUMBER = "contact_number";
     }
 
+    public class Values {
+        public static final long FIVE_MINUTES_IN_MILLIS = 5 * 60 * 1000;
+    }
+
     public class Urls {
-        public static final String BASE_URL = "";
+        public static final String BASE_URL = "http://54.169.151.73:8000/";
     }
 
     public class Regex {

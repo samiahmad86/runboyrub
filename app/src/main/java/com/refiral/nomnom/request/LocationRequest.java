@@ -2,6 +2,7 @@ package com.refiral.nomnom.request;
 
 import com.octo.android.robospice.request.retrofit.RetrofitSpiceRequest;
 import com.refiral.nomnom.model.APIInterface;
+import com.refiral.nomnom.model.DeliveryBoyLocation;
 import com.refiral.nomnom.model.SimpleResponse;
 
 /**
@@ -10,18 +11,16 @@ import com.refiral.nomnom.model.SimpleResponse;
 public class LocationRequest extends RetrofitSpiceRequest<SimpleResponse, APIInterface> {
 
     private String mAccessToken;
-    private double latitude;
-    private double longitude;
+    private DeliveryBoyLocation mLocation;
 
-    public LocationRequest(double latitude, double longitude, String accessToken) {
+    public LocationRequest(DeliveryBoyLocation location, String accessToken) {
         super(SimpleResponse.class, APIInterface.class);
         this.mAccessToken = accessToken;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.mLocation = location;
     }
 
     public SimpleResponse loadDataFromNetwork() {
-        return getService().updateLocation(mAccessToken, latitude, longitude);
+        return getService().updateLocation(mAccessToken, mLocation);
     }
 
 }

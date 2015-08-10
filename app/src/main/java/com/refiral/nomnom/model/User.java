@@ -6,9 +6,12 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Created by tanay on 8/8/15.
  */
-public class LoginResponse {
-
+public class User {
     @Expose
-    @SerializedName("auth_token")
-    public String authToken;
+    @SerializedName("contact_number")
+    public String contactNumber;
+
+    public User(String contactNum) {
+        this.contactNumber = contactNum;
+    }
 }
