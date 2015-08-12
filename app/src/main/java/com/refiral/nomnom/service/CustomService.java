@@ -3,7 +3,6 @@ package com.refiral.nomnom.service;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -27,6 +26,7 @@ import com.refiral.nomnom.model.Order;
 import com.refiral.nomnom.model.SimpleResponse;
 import com.refiral.nomnom.request.LocationRequest;
 import com.refiral.nomnom.request.OrderRequest;
+import com.refiral.nomnom.util.AtomicUtils;
 import com.refiral.nomnom.util.PrefUtils;
 
 /*
@@ -75,16 +75,17 @@ public class CustomService extends Service implements GoogleApiClient.Connection
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "startId" + startId);
-        String action = intent.getAction();
-        if (ACTION_LOC.equals(action)) {
-            Log.d(TAG, "starting spice manager");
-            Log.d(TAG, "location request");
-            buildgoogleApiClientObject();
-            return START_STICKY;
-        } else if (ACTION_ORDER.equals(action)) {
-            getOrder(intent.getIntExtra(Constants.Keys.KEY_ORDER_ID, -1));
-            return START_STICKY;
+        if (intent != null) {
+            String action = intent.getAction();
+            if (ACTION_LOC.equals(action)) {
+                Log.d(TAG, "starting spice manager");
+                Log.d(TAG, "location request");
+                buildgoogleApiClientObject();
+                return START_STICKY;
+            } else if (ACTION_ORDER.equals(action)) {
+                getOrder(intent.getIntExtra(Constants.Keys.KEY_ORDER_ID, -1));
+                return START_STICKY;
+            }
         }
         return START_NOT_STICKY;
     }
@@ -145,24 +146,12 @@ public class CustomService extends Service implements GoogleApiClient.Connection
                 String orderJSON = gson.toJson(order);
                 Log.d(TAG, orderJSON);
                 PrefUtils.saveOrder(orderJSON);
-                NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(CustomService.this);
-                notifBuilder.setSmallIcon(R.mipmap.ic_launcher).setContentTitle("New order").setContentText("Select this notification to stop the song.");
 
-                // start the service to play the song
-                Intent iMediaService = new Intent(getApplicationContext(), MediaService.class);
-                iMediaService.setAction(TAG);
-                startService(iMediaService);
+                // start the service to build the notification
+                Intent iNotificationService = new Intent(CustomService.this, NotificationService.class);
+                iNotificationService.setAction(TAG);
+                startService(iNotificationService);
 
-                // start the HomeActivity on notification click
-                Intent activityIntent = new Intent(CustomService.this, HomeActivity.class);
-                activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                activityIntent.putExtra(Constants.Keys.STARTER_CLASS, TAG);
-                PendingIntent pi = PendingIntent.getActivity(CustomService.this, 0, activityIntent, 0);
-                notifBuilder.setContentIntent(pi);
-
-                NotificationManager mNotificationManager =
-                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                mNotificationManager.notify(1, notifBuilder.build());
                 CustomService.this.stopSelf();
             }
         });

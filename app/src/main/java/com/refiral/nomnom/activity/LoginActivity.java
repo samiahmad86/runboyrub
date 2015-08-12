@@ -21,7 +21,7 @@ import com.refiral.nomnom.util.PrefUtils;
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
 
-    private static final String TAG = LoginActivity.class.getName();
+    public static final String TAG = LoginActivity.class.getName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

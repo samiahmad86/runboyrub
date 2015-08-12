@@ -10,5 +10,8 @@
     <string name="enter_number">Enter your number</string>
     <string name="login">LOGIN</string>
     <string name="action_logout">LOGOUT</string>
-    <string name="intent_filter_media">com.refiral.nomnom.media</string>
+    <string name="action_call">SOS</string>
+    <string name="intent_filter_notification">com.refiral.nomnom.notification</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

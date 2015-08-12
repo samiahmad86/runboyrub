@@ -39,11 +39,23 @@ public class PrefUtils {
         return mSharedPrefs.getString(Constants.Keys.KEY_PUSH_ID, null);
     }
 
+    public static void deleteGcmToken() {
+        mEditor.remove(Constants.Keys.KEY_PUSH_ID).commit();
+    }
+
     public static void saveOrder(String orderJSON) {
         mEditor.putString(Constants.Keys.KEY_ORDER, orderJSON).commit();
     }
 
     public static String getOrder() {
         return mSharedPrefs.getString(Constants.Keys.KEY_ORDER, null);
+    }
+
+    public static void setStatus(int status) {
+        mEditor.putInt(Constants.Keys.KEY_STATUS, status).commit();
+    }
+
+    public static int getStatus() {
+        return mSharedPrefs.getInt(Constants.Keys.KEY_STATUS, Constants.Values.STATUS_PLACEHOLDER);
     }
 }

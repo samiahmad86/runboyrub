@@ -6,6 +6,7 @@ import android.content.Intent;
 import com.refiral.nomnom.activity.HomeActivity;
 import com.refiral.nomnom.activity.LoginActivity;
 import com.refiral.nomnom.activity.SOSActivity;
+import com.refiral.nomnom.activity.SplashActivity;
 import com.refiral.nomnom.service.CustomService;
 import com.refiral.nomnom.service.GCMRegisterIntentService;
 
@@ -53,5 +54,11 @@ public class Router {
         Intent intent = new Intent(context, GCMRegisterIntentService.class);
         intent.setAction(ACTION_GCM);
         context.startService(intent);
+    }
+
+    public static void startSplashActivity(Context context, String className) {
+        Intent intent = new Intent(context, SplashActivity.class);
+        intent.putExtra(Constants.Keys.STARTER_CLASS, className);
+        context.startActivity(intent);
     }
 }
