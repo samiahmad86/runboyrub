@@ -51,8 +51,6 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
         FragmentManager fm = getSupportFragmentManager();
         ft = fm.beginTransaction();
 
-        onFragmentInteraction(PrefUtils.getStatus());
-
         Intent intent = getIntent();
         String previousClassName = intent.getStringExtra(Constants.Keys.STARTER_CLASS);
         if (previousClassName.equals(NotificationService.TAG)) {
@@ -64,6 +62,7 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
             NotificationManager mNotificationManager =
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             mNotificationManager.cancel(notifId);
+            PrefUtils.setStatus(Constants.Values.STATUS_CONFIRMED);
         } else if (LoginActivity.TAG.equals(previousClassName)) {
             // trigger service to get location for the first time
             Intent iLocationService = new Intent(getApplicationContext(), CustomService.class);
@@ -72,6 +71,9 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
             PendingIntent alarmIntent = PendingIntent.getService(getApplicationContext(), 0, iLocationService, PendingIntent.FLAG_UPDATE_CURRENT);
             AlarmUtils.setRepeatingAlarm(getApplicationContext(), alarmIntent, 60000 /*Constants.Values.FIVE_MINUTES_IN_MILLIS*/);
         }
+
+        onFragmentInteraction(PrefUtils.getStatus());
+
     }
 
     @Override

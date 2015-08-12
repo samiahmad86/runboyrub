@@ -64,6 +64,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         int id = view.getId();
         switch (id) {
             case R.id.btn_login: {
+                Log.d(TAG, "login button clicked");
                 String phoneNumber = ((EditText) findViewById(R.id.et_login_number)).getText().toString();
                 if (!phoneNumber.matches(Constants.Regex.NUMBER)) {
                     Toast.makeText(LoginActivity.this, "Enter a valid phone number", Toast.LENGTH_SHORT).show();

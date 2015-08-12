@@ -14,6 +14,7 @@ public class AlarmUtils {
     public static final String TAG = AlarmUtils.class.getName();
 
     public static void setRepeatingAlarm(Context context, PendingIntent pendingIntent, long duration) {
+        Log.d(TAG, "setting the alarm");
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         am.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, duration, duration, pendingIntent);
     }

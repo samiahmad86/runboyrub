@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 import com.refiral.nomnom.config.Constants;
+import com.refiral.nomnom.util.PrefUtils;
 
 /**
  * Created by tanay on 8/8/15.
@@ -16,13 +17,16 @@ public class CustomGCMListenerService extends GcmListenerService {
 
     @Override
     public void onMessageReceived(String from, Bundle data) {
-        int orderId = data.getInt(Constants.Keys.KEY_ORDER_ID, 1);
-        Log.d(TAG, "order received");
-        Log.d(TAG, from);
-        Log.d(TAG, "" + orderId);
-        Intent intent = new Intent(CustomGCMListenerService.this, CustomService.class);
-        intent.setAction(CustomService.ACTION_ORDER);
-        intent.putExtra(Constants.Keys.KEY_ORDER_ID, orderId);
-        startService(intent);
+        if(PrefUtils.getAccessToken() != null) {
+            int orderId = 2/*data.getInt(Constants.Keys.KEY_ORDER_ID, 1)*/;
+            Log.d(TAG, "order received");
+            Log.d(TAG, from);
+            Log.d(TAG, PrefUtils.getAccessToken());
+            Log.d(TAG, "" + orderId);
+            Intent intent = new Intent(CustomGCMListenerService.this, CustomService.class);
+            intent.setAction(CustomService.ACTION_ORDER);
+            intent.putExtra(Constants.Keys.KEY_ORDER_ID, orderId);
+            startService(intent);
+        }
     }
 }
