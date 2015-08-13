@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.refiral.nomnom.R;
+import com.refiral.nomnom.config.Constants;
+import com.refiral.nomnom.util.PrefUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -120,6 +122,12 @@ public class CameraFragment extends BaseFragment implements SurfaceHolder.Callba
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        Log.d(TAG, billFile + file.exists());
+        if(file.exists()) {
+            PrefUtils.setStatus(Constants.Values.STATUS_PICKUP_CONFIRM);
+            PrefUtils.setBillPhoto(file.getAbsolutePath());
+            fil.onFragmentInteraction(Constants.Values.STATUS_PICKUP_CONFIRM, null);
+        } else {
+            refreshCamera();
+        }
     }
 }

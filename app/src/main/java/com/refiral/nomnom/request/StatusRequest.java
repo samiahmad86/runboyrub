@@ -18,18 +18,19 @@ public class StatusRequest extends RetrofitSpiceRequest<SimpleResponse, APIInter
     private String mAmountPaidViaCard;
     private boolean isPaid;     // for the customer
     private TypedFile billPhoto; // photo of the bill taken when receiving the order from the Restaurant.
+    private String totalAmt;
 
     public StatusRequest(String accessToken, int orderId, String deliveryStatus) {
-        this(accessToken, orderId, deliveryStatus, null, null, false, null);
+        this(accessToken, orderId, deliveryStatus, null, null, false, null, null);
     }
 
-    public StatusRequest(String accessToken, int orderId, String deliveryStatus, TypedFile billPhoto) {
-        this(accessToken, orderId, deliveryStatus, null, null, false, billPhoto);
+    public StatusRequest(String accessToken, int orderId, String deliveryStatus, TypedFile billPhoto, String amount) {
+        this(accessToken, orderId, deliveryStatus, null, null, false, billPhoto, amount);
     }
 
 
 
-    public StatusRequest(String accessToken, int orderId, String deliveryStatus, String ammountPaidInCash, String ammountPaidViaCard, boolean isPaid, TypedFile billPhoto) {
+    public StatusRequest(String accessToken, int orderId, String deliveryStatus, String ammountPaidInCash, String ammountPaidViaCard, boolean isPaid, TypedFile billPhoto, String amount) {
         super(SimpleResponse.class, APIInterface.class);
         this.mAccessToken = accessToken;
         this.mOrderId = orderId;
@@ -38,6 +39,7 @@ public class StatusRequest extends RetrofitSpiceRequest<SimpleResponse, APIInter
         this.mAmountPaidInCash = ammountPaidInCash;
         this.isPaid = isPaid;
         this.billPhoto = billPhoto;
+        this.totalAmt = amount;
     }
 
 
@@ -48,7 +50,7 @@ public class StatusRequest extends RetrofitSpiceRequest<SimpleResponse, APIInter
         } else if(billPhoto == null) {
             return getService().updateStatus(mAccessToken, mOrderId, mDeliveryStatus);
         } else {
-            return getService().updateStatus(mAccessToken, mOrderId, mDeliveryStatus, billPhoto);
+            return getService().updateStatus(mAccessToken, mOrderId, mDeliveryStatus, billPhoto, totalAmt);
         }
     }
 }

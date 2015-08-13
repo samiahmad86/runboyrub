@@ -21,7 +21,7 @@ public class Order {
     public Restaurant restaurant;
     @SerializedName("order_items")
     @Expose
-    public List<OrderItem> orderItems = new ArrayList<OrderItem>();
+    public ArrayList<OrderItem> orderItems = new ArrayList<OrderItem>();
     @SerializedName("vat_tax")
     @Expose
     public String vatTax;

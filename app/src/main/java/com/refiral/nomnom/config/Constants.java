@@ -17,6 +17,7 @@ public class Constants {
         public static final String KEY_DELIVERY_STATUS = "delivery_status";
         public static final String KEY_PAYMENT_CARD = "payment_card";
         public static final String KEY_PAYMENT_CASH = "payment_cash";
+        public static final String KEY_AMOUNT_PAID = "amt_paid";
         public static final String KEY_LATITUDE = "latitude";
         public static final String KEY_LONGITUDE = "longitude";
         public static final String KEY_NOTIF_ID = "notif_id";
@@ -31,7 +32,7 @@ public class Constants {
         public static final int STATUS_CONFIRMED = 1;
         public static final int STATUS_ARRIVED_AT_RESTAURANT = 2;
         public static final int STATUS_PICKUP_MATCH = 3;
-        public static final int STATUS_REACHED_CUSTOMER = 4;
+        public static final int STATUS_REACHED_CUSTOMER_ADDRESS = 4;
         public static final int STATUS_DELIVERED = 5;
         public static final int STATUS_PICKUP_PAY = 6;
         public static final int STATUS_PICKUP_PHOTO = 7;

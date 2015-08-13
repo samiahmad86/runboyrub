@@ -30,6 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@id/layout_order_list"
+        android:layout_alignLeft="@id/layout_customer"
         android:text="@string/order_summary"
         android:textColor="@color/c5F93C3"
         android:textSize="15sp" />

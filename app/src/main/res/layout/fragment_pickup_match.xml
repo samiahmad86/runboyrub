@@ -13,12 +13,12 @@
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/tv_order_item_heading"
+        style="@style/BigBlueHeadingStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_toRightOf="@id/iv_lollipop"
-        android:text="@string/match_order_list"
-        style="@style/BigBlueHeadingStyle" />
+        android:text="@string/match_order_list" />
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/tv_item_count"
@@ -31,11 +31,12 @@
 
 
     <include
+        android:id="@+id/layout_order_list"
         layout="@layout/layout_order_list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/tv_item_count"
-        android:layout_below="@id/tv_item_count"
+        android:layout_alignBottom="@id/iv_lollipop"
         android:layout_marginTop="20dp" />
 
     <android.support.v7.widget.AppCompatTextView

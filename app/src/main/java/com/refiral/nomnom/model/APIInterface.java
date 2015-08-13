@@ -46,7 +46,7 @@ public interface APIInterface {
             "Content-Type: application/json"
     })
     @PUT("/delivery/")
-    SimpleResponse updateStatus(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken, @Query(Constants.Keys.KEY_ORDER_ID) int orderID, @Query(Constants.Keys.KEY_DELIVERY_STATUS) String deliveryStatus, @Part(Constants.Keys.KEY_BILL_PHOTO) TypedFile billImage);
+    SimpleResponse updateStatus(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken, @Query(Constants.Keys.KEY_ORDER_ID) int orderID, @Query(Constants.Keys.KEY_DELIVERY_STATUS) String deliveryStatus, @Part(Constants.Keys.KEY_BILL_PHOTO) TypedFile billImage, @Query(Constants.Keys.KEY_AMOUNT_PAID) String ammount);
 
 
     @Headers({
@@ -58,7 +58,7 @@ public interface APIInterface {
     @Headers({
             "Content-Type: application/json"
     })
-    @POST("/delivery_boy_location/")
+    @POST("/delivery_boy/")
     SimpleResponse updateLocation(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken, @Body DeliveryBoyLocation location);
 
 }
