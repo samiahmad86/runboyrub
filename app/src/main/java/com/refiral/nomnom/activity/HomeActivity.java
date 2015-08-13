@@ -12,12 +12,16 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 import com.refiral.nomnom.R;
 import com.refiral.nomnom.config.Constants;
 import com.refiral.nomnom.config.Router;
+import com.refiral.nomnom.fragment.CameraFragment;
 import com.refiral.nomnom.fragment.CustomFragment;
 import com.refiral.nomnom.listeners.FragmentInteractionListener;
 import com.refiral.nomnom.model.SimpleResponse;
@@ -35,6 +39,7 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
     private PendingIntent alarmIntent;
     public static final String TAG = HomeActivity.class.getName();
     private FragmentTransaction ft;
+    private FragmentManager fm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +53,7 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
             return;
         }
 
-        FragmentManager fm = getSupportFragmentManager();
+        fm = getSupportFragmentManager();
         ft = fm.beginTransaction();
 
         Intent intent = getIntent();
@@ -126,6 +131,21 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
 
     @Override
     public void onFragmentInteraction(int code, Bundle extras) {
-        ft.replace(R.id.fl_home, CustomFragment.newInstance(code), "" + code).commit();
+        if (code == Constants.Values.STATUS_PICKUP_PHOTO || code == Constants.Values.STATUS_PLACEHOLDER) {
+            ft.replace(R.id.fl_home, CameraFragment.newInstance(), "" + code)
+                    .addToBackStack("" + code)
+                    .commit();
+        } else if (code == Constants.Values.STATUS_PICKUP_MATCH || code == Constants.Values.STATUS_PICKUP_PAY || code == Constants.Values.STATUS_PICKUP_CONFIRM) {
+            ft.replace(R.id.fl_home, CustomFragment.newInstance(code), "" + code)
+                    .addToBackStack("" + code)
+                    .commit();
+        } else if (code == Constants.Values.STATUS_STARTING_DELIVERY) {
+            ft.replace(R.id.fl_home, CustomFragment.newInstance(code), "" + code)
+                    .commit();
+            fm.popBackStack("" + Constants.Values.STATUS_PICKUP_MATCH, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        } else {
+            ft.replace(R.id.fl_home, CustomFragment.newInstance(code), "" + code)
+                    .commit();
+        }
     }
 }
