@@ -73,7 +73,7 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                 break;
             }
             case Constants.Values.STATUS_PICKUP_PAY: {
-                view = inflater.inflate(R.layout.fragment_pickup_pay, container, false);
+                view = inflater.inflate(R.layout.fragment_delivered, container, false);
                 break;
             }
             case Constants.Values.STATUS_PICKUP_PHOTO: {
@@ -84,6 +84,12 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                 view = inflater.inflate(R.layout.fragment_pickup_confirm, container, false);
                 break;
             }
+
+            case Constants.Values.STATUS_STARTING_DELIVERY: {
+                view = inflater.inflate(R.layout.fragment_reached_customer, container, false);
+                break;
+            }
+
             case Constants.Values.STATUS_REACHED_CUSTOMER: {
                 view = inflater.inflate(R.layout.fragment_reached_customer, container, false);
                 break;

@@ -72,7 +72,7 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
             AlarmUtils.setRepeatingAlarm(getApplicationContext(), alarmIntent, 60000 /*Constants.Values.FIVE_MINUTES_IN_MILLIS*/);
         }
 
-        onFragmentInteraction(PrefUtils.getStatus());
+        onFragmentInteraction(PrefUtils.getStatus(), null);
 
     }
 
@@ -125,7 +125,7 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
     }
 
     @Override
-    public void onFragmentInteraction(int code) {
+    public void onFragmentInteraction(int code, Bundle extras) {
         ft.replace(R.id.fl_home, CustomFragment.newInstance(code), "" + code).commit();
     }
 }

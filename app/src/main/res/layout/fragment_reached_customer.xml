@@ -1,6 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/OuterLayoutStyle"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-</LinearLayout>
+    <ImageView
+        android:id="@+id/iv_lollipop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/lollipop" />
+
+    <include
+        android:id="@+id/layout_customer"
+        layout="@layout/layout_details"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_toRightOf="@id/iv_lollipop" />
+
+    <include
+        android:id="@+id/layout_order_list"
+        layout="@layout/layout_order_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/iv_lollipop"
+        android:layout_alignLeft="@id/layout_customer" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/layout_order_list"
+        android:text="@string/order_summary"
+        android:textColor="@color/c5F93C3"
+        android:textSize="15sp" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/btn_status"
+        style="@style/BigBlueButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="@string/start_delivery" />
+
+</RelativeLayout>

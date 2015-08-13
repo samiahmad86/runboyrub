@@ -1,6 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
-</LinearLayout>
+    <ImageView
+        android:id="@+id/iv_gola"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="50dp"
+        android:src="@drawable/gola" />
+
+    <LinearLayout
+        android:id="@+id/ll_payment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/iv_gola"
+        android:layout_marginLeft="20dp"
+        android:layout_toRightOf="@id/iv_gola"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/tv_payment_heading"
+            style="@style/BigBlueHeadingStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/collected_ammount" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/tv_collectable_ammount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:textSize="15sp" />
+
+        <android.support.v7.widget.AppCompatEditText
+            android:id="@+id/et_payment_cash"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/light_blue_rectangle"
+            android:hint="@string/cash"
+            android:padding="5dp" />
+
+        <android.support.v7.widget.AppCompatEditText
+            android:id="@+id/et_payment_card"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/light_blue_rectangle"
+            android:hint="@string/card"
+            android:padding="5dp" />
+
+    </LinearLayout>
+
+    <android.support.v7.widget.AppCompatButton
+        style="@style/BigBlueButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="false"
+        android:layout_below="@id/ll_payment"
+        android:layout_marginTop="20dp"
+        android:text="@string/done" />
+
+</RelativeLayout>
