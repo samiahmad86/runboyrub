@@ -1,17 +1,35 @@
 <resources>
+
+    <!-- config strings -->
+    <string name="gcm_sender_id">702331513339</string>
     <string name="app_name">NomNom</string>
 
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
-    <string name="title_activity_login">LoginActivity</string>
-    <string name="gcm_sender_id">702331513339</string>
-    <string name="title_activity_sos">SOSActivity</string>
-
-    <string name="enter_number">Enter your number</string>
-    <string name="login">LOGIN</string>
-    <string name="action_logout">LOGOUT</string>
-    <string name="action_call">SOS</string>
+    <!-- intent filters -->
     <string name="intent_filter_notification">com.refiral.nomnom.notification</string>
 
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- menu items -->
+    <string name="action_logout">LOGOUT</string>
+    <string name="action_call">SOS</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- activity labels -->
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_sos">SOSActivity</string>
+
+    <!-- placeholders  -->
+    <string name="hello_world">Hello world!</string>
+    <string name="enter_number">Enter your number</string>
+    <string name="login">LOGIN</string>
+    <string name="hello_blank_fragment">Hello you do not have any orders as of now.</string>
+    <string name="confirm_pickup">Confirm Pickup</string>
+    <string name="match_order">Match Order</string>
+    <string name="reached_restaurant">Reached Restaurant</string>
+    <string name="match_order_list">Match Order List</string>
+    <string name="done">Done</string>
+    <string name="pay_to_restaurant">Pay to restaurant</string>
+    <string name="post_bill_image">Post Bill Image</string>
+    <string name="collected_ammount">Collected Ammount</string>
+    <string name="cash">Cash</string>
+    <string name="card">Card</string>
+
 </resources>

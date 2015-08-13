@@ -1,6 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/OuterLayoutStyle"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-</LinearLayout>
+    <ImageView
+        android:id="@+id/iv_lollipop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/lollipop" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/tv_order_item_heading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@id/iv_lollipop"
+        android:text="@string/match_order_list"
+        android:textColor="@color/c2E78B5"
+        android:textSize="25sp" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/tv_item_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/tv_order_item_heading"
+        android:layout_below="@id/tv_order_item_heading"
+        android:textColor="@color/c2E78B5"
+        android:textSize="15sp" />
+
+
+    <include
+        layout="@layout/layout_order_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/tv_item_count"
+        android:layout_below="@id/tv_item_count"
+        android:layout_marginTop="20dp" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/tv_payable_ammount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/iv_lollipop"
+        android:layout_alignLeft="@id/tv_item_count"
+        android:textSize="15sp" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/btn_status"
+        style="@style/BigBlueButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="@string/match_order" />
+</RelativeLayout>
