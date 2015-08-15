@@ -13,7 +13,7 @@ import com.refiral.nomnom.service.APIService;
  */
 public class BaseFragment extends Fragment {
 
-    private SpiceManager mSpiceManager = new SpiceManager(APIService.class);
+    protected SpiceManager mSpiceManager = new SpiceManager(APIService.class);
     private static final String TAG = BaseFragment.class.getName();
     protected FragmentInteractionListener fil;
 

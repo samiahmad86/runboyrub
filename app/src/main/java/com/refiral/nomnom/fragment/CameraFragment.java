@@ -1,23 +1,30 @@
 package com.refiral.nomnom.fragment;
 
+import android.content.Context;
+import android.graphics.Point;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
 import com.refiral.nomnom.R;
 import com.refiral.nomnom.config.Constants;
+import com.refiral.nomnom.util.DeviceUtils;
 import com.refiral.nomnom.util.PrefUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by tanay on 13/8/15.
@@ -57,9 +64,30 @@ public class CameraFragment extends BaseFragment implements SurfaceHolder.Callba
             Log.d(TAG, "cannot open camera" + ex.getMessage());
             ex.printStackTrace();
         }
-        Camera.Parameters params = mCamera.getParameters();
-        params.setPreviewSize(352, 288);
-        mCamera.setParameters(params);
+        Camera.Parameters parameters = mCamera.getParameters();
+
+        Display display = ((WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        Point screenSize = new Point();
+        display.getSize(screenSize);
+
+        List<Camera.Size> sizeList = parameters.getSupportedPreviewSizes();
+        Camera.Size size = DeviceUtils.getOptimalSize(sizeList, screenSize.x, screenSize.y);
+
+
+        parameters.setPreviewSize(size.width, size.height);
+
+        if(display.getRotation() == Surface.ROTATION_0)
+        {
+            mCamera.setDisplayOrientation(90);
+            parameters.setRotation(90);
+        }
+        if(display.getRotation() == Surface.ROTATION_270)
+        {
+            mCamera.setDisplayOrientation(180);
+            parameters.setRotation(180);
+        }
+
+        mCamera.setParameters(parameters);
 
         try {
             mCamera.setPreviewDisplay(shCamera);

@@ -20,4 +20,7 @@ public class Customer{
     @SerializedName("primary_number")
     @Expose
     public String primaryNumber;
+    @SerializedName("alternate_numbers")
+    @Expose
+    private ArrayList<Object> alternateNumbers = new ArrayList<Object>();
 }

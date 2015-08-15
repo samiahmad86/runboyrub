@@ -56,6 +56,8 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
             return;
         }
 
+        Log.d(TAG, "token " + PrefUtils.getAccessToken());
+
         Intent intent = getIntent();
         String previousClassName = intent.getStringExtra(Constants.Keys.STARTER_CLASS);
         if (previousClassName.equals(NotificationService.TAG)) {
@@ -137,7 +139,7 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
     @Override
     public void onFragmentInteraction(int code, Bundle extras) {
         ft = fm.beginTransaction();
-        if (code == Constants.Values.STATUS_PICKUP_PHOTO) {
+        if (code == Constants.Values.STATUS_PICKUP_PHOTO || code == Constants.Values.STATUS_PLACEHOLDER) {
             ft.replace(R.id.fl_home, CameraFragment.newInstance(), "" + code)
                     .addToBackStack("" + code)
                     .commit();
@@ -145,7 +147,7 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
             ft.replace(R.id.fl_home, CustomFragment.newInstance(code), "" + code)
                     .addToBackStack("" + code)
                     .commit();
-        } else if (code == Constants.Values.STATUS_STARTING_DELIVERY) {
+        } else if (code == Constants.Values.STATUS_REACHED_CUSTOMER_ADDRESS) {
             fm.popBackStack("" + Constants.Values.STATUS_PICKUP_MATCH, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             ft.replace(R.id.fl_home, CustomFragment.newInstance(code), "" + code)
                     .commit();

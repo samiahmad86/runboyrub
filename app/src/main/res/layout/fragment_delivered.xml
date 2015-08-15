@@ -62,8 +62,6 @@
         style="@style/BigBlueButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_alignParentBottom="false"
-        android:layout_below="@id/ll_payment"
         android:layout_marginTop="20dp"
         android:text="@string/done" />
 

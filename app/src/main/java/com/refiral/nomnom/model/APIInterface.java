@@ -40,20 +40,20 @@ public interface APIInterface {
             "Content-Type: application/json"
     })
     @PUT("/delivery/")
-    SimpleResponse updateStatus(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken, @Query(Constants.Keys.KEY_ORDER_ID) int orderID, @Query(Constants.Keys.KEY_DELIVERY_STATUS) String deliveryStatus);
+    SimpleResponse updateStatus(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken, @Query(Constants.Keys.KEY_ORDER_ID) long orderID, @Query(Constants.Keys.KEY_DELIVERY_STATUS) String deliveryStatus);
 
     @Headers({
             "Content-Type: application/json"
     })
     @PUT("/delivery/")
-    SimpleResponse updateStatus(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken, @Query(Constants.Keys.KEY_ORDER_ID) int orderID, @Query(Constants.Keys.KEY_DELIVERY_STATUS) String deliveryStatus, @Part(Constants.Keys.KEY_BILL_PHOTO) TypedFile billImage, @Query(Constants.Keys.KEY_AMOUNT_PAID) String ammount);
+    SimpleResponse updateStatus(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken, @Query(Constants.Keys.KEY_ORDER_ID) long orderID, @Query(Constants.Keys.KEY_DELIVERY_STATUS) String deliveryStatus, @Part(Constants.Keys.KEY_BILL_PHOTO) TypedFile billImage, @Query(Constants.Keys.KEY_AMOUNT_PAID) String ammount);
 
 
     @Headers({
             "Content-Type: application/json"
     })
     @PUT("/delivery/")
-    SimpleResponse updateStatus(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken, @Query(Constants.Keys.KEY_ORDER_ID) int orderID, @Query(Constants.Keys.KEY_DELIVERY_STATUS) String deliveryStatus, @Query(Constants.Keys.KEY_PAYMENT_CARD) String cardPayment, @Query(Constants.Keys.KEY_PAYMENT_CASH) String cashPayment);
+    SimpleResponse updateStatus(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken, @Query(Constants.Keys.KEY_ORDER_ID) long orderID, @Query(Constants.Keys.KEY_DELIVERY_STATUS) String deliveryStatus, @Query(Constants.Keys.KEY_PAYMENT_CARD) String cardPayment, @Query(Constants.Keys.KEY_PAYMENT_CASH) String cashPayment);
 
     @Headers({
             "Content-Type: application/json"

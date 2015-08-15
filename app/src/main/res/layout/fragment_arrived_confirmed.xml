@@ -4,20 +4,13 @@
     android:layout_height="match_parent"
     style="@style/OuterLayoutStyle">
 
-    <ImageView
-        android:id="@+id/iv_pointer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/pointer" />
 
     <include
         android:id="@+id/layout_restaurant"
         layout="@layout/layout_details"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@id/iv_pointer"
-        android:layout_marginLeft="20dp"
-        android:layout_toRightOf="@id/iv_pointer" />
+         />
 
 
     <include
@@ -25,10 +18,9 @@
         layout="@layout/layout_details"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/iv_pointer"
-        android:layout_marginLeft="20dp"
-        android:layout_toRightOf="@id/iv_pointer" />
-
+        android:layout_above="@+id/btn_status"
+        android:layout_marginBottom="10dp"
+        />
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/btn_status"

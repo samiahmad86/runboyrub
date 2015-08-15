@@ -12,7 +12,7 @@ import retrofit.mime.TypedFile;
 public class StatusRequest extends RetrofitSpiceRequest<SimpleResponse, APIInterface> {
 
     private String mAccessToken;
-    private int mOrderId;
+    private long mOrderId;
     private String mDeliveryStatus;
     private String mAmountPaidInCash;
     private String mAmountPaidViaCard;
@@ -20,17 +20,17 @@ public class StatusRequest extends RetrofitSpiceRequest<SimpleResponse, APIInter
     private TypedFile billPhoto; // photo of the bill taken when receiving the order from the Restaurant.
     private String totalAmt;
 
-    public StatusRequest(String accessToken, int orderId, String deliveryStatus) {
+    public StatusRequest(String accessToken, long orderId, String deliveryStatus) {
         this(accessToken, orderId, deliveryStatus, null, null, false, null, null);
     }
 
-    public StatusRequest(String accessToken, int orderId, String deliveryStatus, TypedFile billPhoto, String amount) {
+    public StatusRequest(String accessToken, long orderId, String deliveryStatus, TypedFile billPhoto, String amount) {
         this(accessToken, orderId, deliveryStatus, null, null, false, billPhoto, amount);
     }
 
 
 
-    public StatusRequest(String accessToken, int orderId, String deliveryStatus, String ammountPaidInCash, String ammountPaidViaCard, boolean isPaid, TypedFile billPhoto, String amount) {
+    public StatusRequest(String accessToken, long orderId, String deliveryStatus, String ammountPaidInCash, String ammountPaidViaCard, boolean isPaid, TypedFile billPhoto, String amount) {
         super(SimpleResponse.class, APIInterface.class);
         this.mAccessToken = accessToken;
         this.mOrderId = orderId;

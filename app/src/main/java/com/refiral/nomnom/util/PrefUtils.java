@@ -59,14 +59,6 @@ public class PrefUtils {
         return mSharedPrefs.getInt(Constants.Keys.KEY_STATUS, Constants.Values.STATUS_PLACEHOLDER);
     }
 
-    public static void setAmountPaidToRest(String amount) {
-        mEditor.putString(Constants.Keys.KEY_AMOUNT_PAID, amount).commit();
-    }
-
-    public static String getAmountPaid() {
-        return mSharedPrefs.getString(Constants.Keys.KEY_AMOUNT_PAID, null);
-    }
-
     public static void setBillPhoto(String photo) {
         mEditor.putString(Constants.Keys.KEY_BILL_PHOTO, photo).commit();
     }

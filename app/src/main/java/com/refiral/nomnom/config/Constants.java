@@ -38,10 +38,16 @@ public class Constants {
         public static final int STATUS_PICKUP_PHOTO = 7;
         public static final int STATUS_PICKUP_CONFIRM = 8;
         public static final int STATUS_STARTING_DELIVERY = 9;
+        public static final String STATUS_STR_CONFIRMED = "confirmed";
+        public static final String STATUS_STR_ARRIVED = "arrived";
+        public static final String STATUS_STR_PICKUP = "pick_up";
+        public static final String STATUS_STR_REACHED = "reached";
+        public static final String STATUS_STR_DELIVERED = "delivered";
+
     }
 
     public class Urls {
-        public static final String BASE_URL = "http://54.169.151.73:8000/";
+        public static final String BASE_URL = "http://api.gonomnom.in/agent_login/";
     }
 
     public class Regex {

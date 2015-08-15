@@ -9,6 +9,17 @@ import com.google.gson.annotations.SerializedName;
 public class LoginResponse {
 
     @Expose
+    public long id;
+    @Expose
+    public String name;
+    @SerializedName("contact_number")
+    @Expose
+    public String contactNumber;
+    @SerializedName("agent_type")
+    @Expose
+    public String agentType;
+    
+    @Expose
     @SerializedName("auth_token")
     public String authToken;
 }

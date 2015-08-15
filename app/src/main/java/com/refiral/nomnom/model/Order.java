@@ -13,6 +13,9 @@ import java.util.List;
  * Created by tanay on 7/8/15.
  */
 public class Order {
+
+    @Expose
+    public long id;
     @Expose
     public Customer customer;
     @Expose
@@ -22,6 +25,9 @@ public class Order {
     @SerializedName("order_items")
     @Expose
     public ArrayList<OrderItem> orderItems = new ArrayList<OrderItem>();
+    @SerializedName("delivery_boy")
+    @Expose
+    public DeliveryBoy deliveryBoy;
     @SerializedName("vat_tax")
     @Expose
     public String vatTax;
@@ -54,4 +60,10 @@ public class Order {
     @SerializedName("payment_card")
     @Expose
     public long paymentCard;
+    @SerializedName("created_on")
+    @Expose
+    public String createdOn;
+    @SerializedName("updated_on")
+    @Expose
+    public String updatedOn;
 }

@@ -5,19 +5,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/iv_lollipop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/lollipop" />
-
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/tv_order_item_heading"
         style="@style/BigBlueHeadingStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@id/iv_lollipop"
         android:text="@string/match_order_list" />
 
     <android.support.v7.widget.AppCompatTextView
@@ -26,6 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/tv_order_item_heading"
         android:layout_below="@id/tv_order_item_heading"
+        android:layout_marginTop="10dp"
         android:textColor="@color/c2E78B5"
         android:textSize="15sp" />
 
@@ -36,15 +29,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/tv_item_count"
-        android:layout_alignBottom="@id/iv_lollipop"
-        android:layout_marginTop="20dp" />
+        android:layout_below="@id/tv_item_count"
+        android:layout_above="@+id/tv_payable_ammount"
+        android:layout_marginTop="10dp" />
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/tv_payable_ammount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/iv_lollipop"
         android:layout_alignLeft="@id/tv_item_count"
+        android:layout_above="@id/btn_status"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:textSize="15sp" />
 
     <android.support.v7.widget.AppCompatButton

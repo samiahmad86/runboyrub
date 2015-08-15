@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.refiral.nomnom.R;
 import com.refiral.nomnom.model.OrderItem;
 
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ public class OrderItemsAdapter extends BaseAdapter {
     public View getView(int i, View convertView, ViewGroup parent) {
         ViewHolder vh = null;
         if (convertView == null) {
-            convertView = mInflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+            convertView = mInflater.inflate(R.layout.simple_list_item_1, parent, false);
             vh = new ViewHolder();
             vh.tvOrderItem = (TextView) convertView.findViewById(android.R.id.text1);
             convertView.setTag(vh);

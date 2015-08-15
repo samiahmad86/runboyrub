@@ -21,10 +21,10 @@
     <string name="enter_number">Enter your number</string>
     <string name="login">LOGIN</string>
     <string name="hello_blank_fragment">Hello you do not have any orders as of now.</string>
-    <string name="confirm_pickup">Confirm Pickup</string>
+    <string name="accept_delivery">Confirm Delivery</string>
     <string name="match_order">Match Order</string>
     <string name="reached_restaurant">Reached Restaurant</string>
-    <string name="match_order_list">Match Order List</string>
+    <string name="match_order_list">Match Order</string>
     <string name="done">Done</string>
     <string name="pay_to_restaurant">Pay to restaurant</string>
     <string name="post_bill_image">Post Bill Image</string>
