@@ -145,12 +145,14 @@ public class CustomService extends Service implements GoogleApiClient.Connection
                 Gson gson = new Gson();
                 String orderJSON = gson.toJson(order);
                 Log.d(TAG, orderJSON);
-                PrefUtils.saveOrder(orderJSON);
 
-                // start the service to build the notification
-                Intent iNotificationService = new Intent(CustomService.this, NotificationService.class);
-                iNotificationService.setAction(TAG);
-                startService(iNotificationService);
+                // start the service to build the notification if the order is new
+                if(PrefUtils.getOrder() == null) {
+                    Intent iNotificationService = new Intent(CustomService.this, NotificationService.class);
+                    iNotificationService.setAction(TAG);
+                    startService(iNotificationService);
+                }
+                PrefUtils.saveOrder(orderJSON);
 
                 CustomService.this.stopSelf();
             }

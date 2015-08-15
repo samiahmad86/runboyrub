@@ -51,6 +51,10 @@ public class PrefUtils {
         return mSharedPrefs.getString(Constants.Keys.KEY_ORDER, null);
     }
 
+    public static void deleteOrder() {
+        mEditor.remove(Constants.Keys.KEY_ORDER).commit();
+    }
+
     public static void setStatus(int status) {
         mEditor.putInt(Constants.Keys.KEY_STATUS, status).commit();
     }

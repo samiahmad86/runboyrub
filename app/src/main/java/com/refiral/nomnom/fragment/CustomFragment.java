@@ -283,6 +283,7 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
 
             case Constants.Values.STATUS_DELIVERED: {
                 PrefUtils.setStatus(Constants.Values.STATUS_PLACEHOLDER);
+                PrefUtils.deleteOrder();
                 fil.onFragmentInteraction(Constants.Values.STATUS_PLACEHOLDER, null);
                 break;
             }
