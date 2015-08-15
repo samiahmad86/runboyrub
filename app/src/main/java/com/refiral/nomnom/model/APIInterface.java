@@ -31,9 +31,10 @@ public interface APIInterface {
     SimpleResponse logout(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken);
 
     @Headers({
-            "Content-Type: application/json"
+            "Content-Type: application/json",
+            "X-Device-Type: android"
     })
-    @GET("/delivery/")
+    @GET("/order/")
     Order getOrder(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken, @Query(Constants.Keys.KEY_ORDER_ID) int orderId);
 
     @Headers({

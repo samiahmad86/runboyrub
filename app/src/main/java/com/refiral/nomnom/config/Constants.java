@@ -47,7 +47,7 @@ public class Constants {
     }
 
     public class Urls {
-        public static final String BASE_URL = "http://api.gonomnom.in/agent_login/";
+        public static final String BASE_URL = "http://api.gonomnom.in/";
     }
 
     public class Regex {

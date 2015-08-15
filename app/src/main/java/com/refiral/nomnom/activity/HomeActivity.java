@@ -139,7 +139,7 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
     @Override
     public void onFragmentInteraction(int code, Bundle extras) {
         ft = fm.beginTransaction();
-        if (code == Constants.Values.STATUS_PICKUP_PHOTO || code == Constants.Values.STATUS_PLACEHOLDER) {
+        if (code == Constants.Values.STATUS_PICKUP_PHOTO) {
             ft.replace(R.id.fl_home, CameraFragment.newInstance(), "" + code)
                     .addToBackStack("" + code)
                     .commit();

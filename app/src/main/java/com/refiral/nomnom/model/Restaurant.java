@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class Restaurant {
 
     @Expose
-    public Brand brand;
+    public String brand;
     @Expose
     public String address;
     @Expose

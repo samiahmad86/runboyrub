@@ -92,7 +92,7 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                     btnStatus.setText(getActivity().getResources().getString(R.string.reached_restaurant));
                 }
                 View vRest = view.findViewById(R.id.layout_restaurant);
-                ((TextView) vRest.findViewById(R.id.tv_name)).setText(getOrder().restaurant.brand.name);
+                ((TextView) vRest.findViewById(R.id.tv_name)).setText(getOrder().restaurant.brand);
                 ((TextView) vRest.findViewById(R.id.tv_address)).setText(getOrder().restaurant.address);
                 if (getOrder().restaurant.numbers.size() > 0) {
                     ((TextView) vRest.findViewById(R.id.tv_ph_no)).setText("Ph No. " + getOrder().restaurant.numbers.get(0).toString());

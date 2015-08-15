@@ -78,7 +78,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     private void registerUser(String phoneNumber) {
         User user = new User(phoneNumber);
-        LoginRequest mLoginRequest = new LoginRequest(user, DeviceUtils.getDeviceID(this), PrefUtils.getGcmToken(), "Android");
+        LoginRequest mLoginRequest = new LoginRequest(user, DeviceUtils.getDeviceID(this), PrefUtils.getGcmToken(), "android");
         Log.d(TAG, "creating the request");
         getSpiceManager().execute(mLoginRequest, new RequestListener<LoginResponse>() {
             @Override

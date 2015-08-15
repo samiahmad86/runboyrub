@@ -97,7 +97,7 @@ public class CustomService extends Service implements GoogleApiClient.Connection
         if (lastLocation != null) {
             DeliveryBoyLocation dbl = new DeliveryBoyLocation(lastLocation.getLatitude(), lastLocation.getLongitude());
             LocationRequest lr = new LocationRequest(dbl, PrefUtils.getAccessToken());
-            Log.d(TAG, "executing request");
+            Log.d(TAG, "executing request with token " + PrefUtils.getAccessToken());
             spiceManager.execute(lr, new RequestListener<SimpleResponse>() {
                 @Override
                 public void onRequestFailure(SpiceException spiceException) {
