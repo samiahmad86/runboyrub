@@ -133,6 +133,21 @@ public class CustomService extends Service implements GoogleApiClient.Connection
     }
 
     private void getOrder(int orderId) {
+        final String orderStr = PrefUtils.getOrder();
+        if(orderStr != null) {
+            Gson gson = new Gson();
+            Order order = gson.fromJson(orderStr, Order.class);
+            // the order id is different from the current order so ignore this push
+            if(orderId != order.id) {
+                return;
+            }
+            if(order.status.equalsIgnoreCase(Constants.Values.ORDER_STATUS_CANCELLED)) {
+                // the order has been cancelled by the user.
+                PrefUtils.deleteOrder();
+                PrefUtils.setStatus(Constants.Values.STATUS_PLACEHOLDER);
+                return;
+            }
+        }
         final OrderRequest or = new OrderRequest(PrefUtils.getAccessToken(), orderId);
         spiceManager.execute(or, new RequestListener<Order>() {
             @Override
@@ -145,15 +160,14 @@ public class CustomService extends Service implements GoogleApiClient.Connection
                 Gson gson = new Gson();
                 String orderJSON = gson.toJson(order);
                 Log.d(TAG, orderJSON);
-
                 // start the service to build the notification if the order is new
-                if(PrefUtils.getOrder() == null) {
+                // TODO: remove the true only for testing purposes
+                if(orderStr == null) {
                     Intent iNotificationService = new Intent(CustomService.this, NotificationService.class);
                     iNotificationService.setAction(TAG);
                     startService(iNotificationService);
                 }
                 PrefUtils.saveOrder(orderJSON);
-
                 CustomService.this.stopSelf();
             }
         });

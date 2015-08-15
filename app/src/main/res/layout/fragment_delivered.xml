@@ -36,23 +36,25 @@
             android:textSize="15sp" />
 
         <android.support.v7.widget.AppCompatEditText
-            android:id="@+id/et_payment_cash"
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_marginTop="5dp"
-            android:inputType="number"
-            android:background="@drawable/light_blue_rectangle"
-            android:hint="@string/cash"
-            android:padding="5dp" />
-
-        <android.support.v7.widget.AppCompatEditText
             android:id="@+id/et_payment_card"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_marginTop="5dp"
             android:background="@drawable/light_blue_rectangle"
             android:hint="@string/card"
+            android:singleLine="true"
             android:inputType="number"
+            android:padding="5dp" />
+
+        <android.support.v7.widget.AppCompatEditText
+            android:id="@+id/et_payment_cash"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:singleLine="true"
+            android:layout_marginTop="5dp"
+            android:inputType="number"
+            android:background="@drawable/light_blue_rectangle"
+            android:hint="@string/cash"
             android:padding="5dp" />
 
     </LinearLayout>
@@ -60,6 +62,11 @@
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/btn_status"
         style="@style/BigBlueButtonStyle"
+        android:layout_alignParentBottom="false"
+        android:imeOptions="actionDone"
+        android:layout_below="@id/ll_payment"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="20dp"

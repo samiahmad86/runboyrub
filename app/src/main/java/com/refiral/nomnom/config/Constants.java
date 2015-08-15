@@ -38,6 +38,9 @@ public class Constants {
         public static final int STATUS_PICKUP_PHOTO = 7;
         public static final int STATUS_PICKUP_CONFIRM = 8;
         public static final int STATUS_STARTING_DELIVERY = 9;
+        public static final String ORDER_STATUS_CANCELLED = "cancelled";
+        public static final String ORDER_STATUS_UPDATE = "update";
+        public static final String ORDER_STATUS_NEW = "awaiting_confirmation";
         public static final String STATUS_STR_CONFIRMED = "confirmed";
         public static final String STATUS_STR_ARRIVED = "arrived";
         public static final String STATUS_STR_PICKUP = "pick_up";

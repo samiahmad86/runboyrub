@@ -12,9 +12,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
 
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
@@ -36,7 +33,6 @@ import com.refiral.nomnom.util.PrefUtils;
  */
 public class HomeActivity extends BaseActivity implements FragmentInteractionListener {
 
-    private PendingIntent alarmIntent;
     public static final String TAG = HomeActivity.class.getName();
     private FragmentTransaction ft;
     private FragmentManager fm;
@@ -61,6 +57,9 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
         Intent intent = getIntent();
         String previousClassName = intent.getStringExtra(Constants.Keys.STARTER_CLASS);
         if (previousClassName.equals(NotificationService.TAG)) {
+
+            Log.d(NotificationService.TAG, "" + PrefUtils.wasServiceDestroyed());
+
             // stop the notification service
             Intent iNotificationStop = new Intent(getResources().getString(R.string.intent_filter_notification));
             int notifId = intent.getIntExtra(Constants.Keys.KEY_NOTIF_ID, 1);
@@ -76,6 +75,7 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
             iLocationService.setAction(CustomService.ACTION_LOC);
             // create pending intent for location alarm
             PendingIntent alarmIntent = PendingIntent.getService(getApplicationContext(), 0, iLocationService, PendingIntent.FLAG_UPDATE_CURRENT);
+            // TODO: set value to five mintues
             AlarmUtils.setRepeatingAlarm(getApplicationContext(), alarmIntent, 60000 /*Constants.Values.FIVE_MINUTES_IN_MILLIS*/);
         }
 

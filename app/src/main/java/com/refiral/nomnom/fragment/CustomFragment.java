@@ -2,14 +2,17 @@ package com.refiral.nomnom.fragment;
 
 
 import android.app.Fragment;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -36,11 +39,12 @@ import retrofit.mime.TypedFile;
  * Use the {@link CustomFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CustomFragment extends BaseFragment implements View.OnClickListener, RequestListener<SimpleResponse> {
+public class CustomFragment extends BaseFragment implements View.OnClickListener, RequestListener<SimpleResponse>, TextView.OnEditorActionListener {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_CODE = "code";
     private static Order order;
     private int code;
+    private boolean isKeyboardShown = false;
     private static final String TAG = CustomFragment.class.getName();
 
     /**
@@ -120,6 +124,7 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                 EditText etAmt = (EditText) view.findViewById(R.id.et_payment_cash);
                 etAmt.setHint("");
                 etAmt.requestFocus();
+                showKeyboard();
                 view.findViewById(R.id.et_payment_card).setVisibility(View.GONE);
                 view.findViewById(R.id.btn_status).setOnClickListener(this);
                 break;
@@ -158,6 +163,7 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
 
             case Constants.Values.STATUS_DELIVERED: {
                 view = inflater.inflate(R.layout.fragment_delivered, container, false);
+                showKeyboard();
                 view.findViewById(R.id.btn_status).setOnClickListener(this);
                 break;
             }
@@ -167,10 +173,20 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
 
 
     @Override
+    public void onStop() {
+        super.onStop();
+        if (isKeyboardShown) {
+            hideKeyboard();
+        }
+    }
+
+    @Override
     public void onClick(final View view) {
         int id = view.getId();
         switch (id) {
             case R.id.btn_status: {
+
+                view.setEnabled(false);
 
                 switch (code) {
 
@@ -193,7 +209,9 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
 
                     case Constants.Values.STATUS_PICKUP_PAY: {
                         StatusRequest sr = new StatusRequest(PrefUtils.getAccessToken(), getOrder().id, Constants.Values.STATUS_STR_PICKUP, new TypedFile("multipart/form-data", new File(PrefUtils.getBillPhoto())), ((EditText) getView().findViewById(R.id.et_payment_cash)).getText().toString());
-                        mSpiceManager.execute(sr, this);
+                        // TODO: remove the comments once the API gets fixed
+//                        mSpiceManager.execute(sr, this);
+                        onRequestSuccess(null);
                         break;
                     }
 
@@ -229,19 +247,12 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
         }
     }
 
-    private Order getOrder() {
-        if (order == null) {
-            String json = PrefUtils.getOrder();
-            if (json != null) {
-                order = (new Gson()).fromJson(json, Order.class);
-            }
-        }
-        return order;
-    }
 
     @Override
     public void onRequestFailure(SpiceException spiceException) {
-
+        if (getView() != null) {
+            getView().findViewById(R.id.btn_status).setEnabled(true);
+        }
     }
 
     @Override
@@ -252,7 +263,11 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
             case Constants.Values.STATUS_CONFIRMED: {
                 Log.d(TAG, "status confirmed");
                 PrefUtils.setStatus(Constants.Values.STATUS_ARRIVED_AT_RESTAURANT);
-                ((Button) getView().findViewById(R.id.btn_status)).setText(getActivity().getResources().getString(R.string.reached_restaurant));
+                if (getView() != null) {
+                    Button btnStatus = (Button) getView().findViewById(R.id.btn_status);
+                    (btnStatus).setText(getActivity().getResources().getString(R.string.reached_restaurant));
+                    btnStatus.setEnabled(true);
+                }
                 code = Constants.Values.STATUS_ARRIVED_AT_RESTAURANT;
                 break;
             }
@@ -289,4 +304,31 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
             }
         }
     }
+
+    @Override
+    public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+
+        return false;
+    }
+
+    private Order getOrder() {
+        if (order == null) {
+            String json = PrefUtils.getOrder();
+            if (json != null) {
+                order = (new Gson()).fromJson(json, Order.class);
+            }
+        }
+        return order;
+    }
+
+    private void showKeyboard() {
+        ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+        isKeyboardShown = true;
+    }
+
+    private void hideKeyboard() {
+        ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(getView().getWindowToken(), 0);
+        isKeyboardShown = false;
+    }
+
 }

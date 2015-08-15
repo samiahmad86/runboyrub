@@ -71,4 +71,11 @@ public class PrefUtils {
         return mSharedPrefs.getString(Constants.Keys.KEY_BILL_PHOTO, null);
     }
 
+    public static void serviceWasDestroyed() {
+        mEditor.putBoolean("App", true).commit();
+    }
+    public static boolean wasServiceDestroyed() {
+        return mSharedPrefs.getBoolean("App", false);
+    }
+
 }

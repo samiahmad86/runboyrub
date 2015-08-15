@@ -16,20 +16,22 @@ import android.os.Vibrator;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.refiral.nomnom.R;
 import com.refiral.nomnom.activity.HomeActivity;
 import com.refiral.nomnom.config.Constants;
 import com.refiral.nomnom.util.AtomicUtils;
+import com.refiral.nomnom.util.PrefUtils;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class NotificationService extends Service {
     public static final String TAG = NotificationService.class.getName();
 
     private Vibrator mVibrator;
-    private static HashMap<Integer, MediaPlayer> hmMediaPlayer = new HashMap<>();
-
+    private HashMap<Integer, MediaPlayer> hmMediaPlayer = new HashMap<>();
 
     public NotificationService() {
     }
@@ -65,6 +67,11 @@ public class NotificationService extends Service {
 
                 NotificationManager mNotificationManager =
                         (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                try {
+                    mNotificationManager.cancel(startId);
+                } catch (RuntimeException re) {
+                    re.printStackTrace();
+                }
                 mNotificationManager.notify(startId, notifBuilder.build());
 
                 // set the phone to vibrate
@@ -83,24 +90,28 @@ public class NotificationService extends Service {
                 Log.d(TAG, "playing, startId " + startId);
             }
         }
-        return START_STICKY;
+        return START_REDELIVER_INTENT;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy called");
+        PrefUtils.serviceWasDestroyed();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(brMedia);
     }
 
     private BroadcastReceiver brMedia = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "stopping service");
             int id = intent.getIntExtra(Constants.Keys.KEY_NOTIF_ID, 1);
-            hmMediaPlayer.get(id).stop();
-            hmMediaPlayer.remove(id);
-            mVibrator.cancel();
+            try {
+                mVibrator.cancel();
+                hmMediaPlayer.get(id).stop();
+                hmMediaPlayer.remove(id);
+            } catch (Exception ex) {
+                Log.d(TAG, "something went wrong");
+            }
             NotificationService.this.stopSelf(id);
         }
     };
