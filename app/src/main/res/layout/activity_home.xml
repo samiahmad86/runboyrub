@@ -3,11 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.Toolbar
+    <include
         android:id="@+id/tb_home"
-        android:background="@color/c2E78B5"
-        android:layout_width="match_parent"
-        android:layout_height="50dp" />
+        layout="@layout/layout_toolbar" />
 
     <FrameLayout
         android:id="@+id/fl_home"

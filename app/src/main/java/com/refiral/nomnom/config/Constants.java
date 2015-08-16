@@ -23,7 +23,8 @@ public class Constants {
         public static final String KEY_NOTIF_ID = "notif_id";
         public static final String KEY_BILL_PHOTO = "bill_photo";
         public static final String KEY_CONTACT_NUMBER = "contact_number";
-        public static final String KEY_STATUS = "delivery_boy_status";
+        public static final String KEY_DELIVERY_BOY_STATUS = "delivery_boy_status";
+        public static final String KEY_STATUS = "status";
     }
 
     public class Values {
@@ -39,9 +40,9 @@ public class Constants {
         public static final int STATUS_PICKUP_CONFIRM = 8;
         public static final int STATUS_STARTING_DELIVERY = 9;
         public static final String ORDER_STATUS_CANCELLED = "cancelled";
-        public static final String ORDER_STATUS_UPDATE = "update";
-        public static final String ORDER_STATUS_NEW = "awaiting_confirmation";
-        public static final String STATUS_STR_CONFIRMED = "confirmed";
+        public static final String ORDER_STATUS_UPDATE = "updated";
+        public static final String ORDER_STATUS_NEW = "new";
+        public static final String STATUS_STR_CONFIRMED = "delivery_confirmed";
         public static final String STATUS_STR_ARRIVED = "arrived";
         public static final String STATUS_STR_PICKUP = "pick_up";
         public static final String STATUS_STR_REACHED = "reached";

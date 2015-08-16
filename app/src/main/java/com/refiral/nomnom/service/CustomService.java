@@ -1,14 +1,10 @@
 package com.refiral.nomnom.service;
 
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -18,15 +14,12 @@ import com.google.gson.Gson;
 import com.octo.android.robospice.SpiceManager;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
-import com.refiral.nomnom.R;
-import com.refiral.nomnom.activity.HomeActivity;
 import com.refiral.nomnom.config.Constants;
 import com.refiral.nomnom.model.DeliveryBoyLocation;
 import com.refiral.nomnom.model.Order;
 import com.refiral.nomnom.model.SimpleResponse;
 import com.refiral.nomnom.request.LocationRequest;
 import com.refiral.nomnom.request.OrderRequest;
-import com.refiral.nomnom.util.AtomicUtils;
 import com.refiral.nomnom.util.PrefUtils;
 
 /*
@@ -78,12 +71,10 @@ public class CustomService extends Service implements GoogleApiClient.Connection
         if (intent != null) {
             String action = intent.getAction();
             if (ACTION_LOC.equals(action)) {
-                Log.d(TAG, "starting spice manager");
-                Log.d(TAG, "location request");
-                buildgoogleApiClientObject();
+                buildGoogleApiClientObject();
                 return START_STICKY;
             } else if (ACTION_ORDER.equals(action)) {
-                getOrder(intent.getIntExtra(Constants.Keys.KEY_ORDER_ID, -1));
+                getOrder(intent.getIntExtra(Constants.Keys.KEY_ORDER_ID, -1), intent.getStringExtra(Constants.Keys.KEY_STATUS));
                 return START_STICKY;
             }
         }
@@ -123,7 +114,7 @@ public class CustomService extends Service implements GoogleApiClient.Connection
 
     }
 
-    private void buildgoogleApiClientObject() {
+    private void buildGoogleApiClientObject() {
         mGoogleApiClient = new GoogleApiClient.Builder(CustomService.this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -132,19 +123,13 @@ public class CustomService extends Service implements GoogleApiClient.Connection
         mGoogleApiClient.connect();
     }
 
-    private void getOrder(int orderId) {
-        final String orderStr = PrefUtils.getOrder();
+    private void getOrder(int orderId, final String status) {
+        String orderStr = PrefUtils.getOrder();
         if(orderStr != null) {
             Gson gson = new Gson();
             Order order = gson.fromJson(orderStr, Order.class);
             // the order id is different from the current order so ignore this push
             if(orderId != order.id) {
-                return;
-            }
-            if(order.status.equalsIgnoreCase(Constants.Values.ORDER_STATUS_CANCELLED)) {
-                // the order has been cancelled by the user.
-                PrefUtils.deleteOrder();
-                PrefUtils.setStatus(Constants.Values.STATUS_PLACEHOLDER);
                 return;
             }
         }
@@ -161,11 +146,12 @@ public class CustomService extends Service implements GoogleApiClient.Connection
                 String orderJSON = gson.toJson(order);
                 Log.d(TAG, orderJSON);
                 // start the service to build the notification if the order is new
-                // TODO: remove the true only for testing purposes
-                if(orderStr == null) {
+                //TODO: remove the true
+                if(true || (status != null && status.equalsIgnoreCase(Constants.Values.ORDER_STATUS_NEW))) {
                     Intent iNotificationService = new Intent(CustomService.this, NotificationService.class);
                     iNotificationService.setAction(TAG);
                     startService(iNotificationService);
+                    PrefUtils.setCurrentOrderID(order.id);
                 }
                 PrefUtils.saveOrder(orderJSON);
                 CustomService.this.stopSelf();

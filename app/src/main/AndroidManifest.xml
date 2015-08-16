@@ -12,9 +12,10 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <uses-feature android:name="android.hardware.camera" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <!-- Creates a custom permission so only this app can receive its messages. -->
@@ -33,6 +34,7 @@
         <activity
             android:name=".activity.SplashActivity"
             android:label="@string/app_name"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
             android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -41,6 +43,23 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".activity.LoginActivity"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:windowSoftInputMode="stateVisible" />
+
+        <activity
+            android:name=".activity.SOSActivity"
+            android:label="@string/title_activity_sos" />
+
+        <activity
+            android:name=".activity.HomeActivity"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
+
+
         <!-- GCM implementation -->
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
@@ -48,10 +67,11 @@
             android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-
                 <category android:name="com.refiral.nomnom" />
             </intent-filter>
         </receiver>
+
+        <!-- Service called when GCM notification received -->
 
         <service
             android:name=".service.CustomGCMListenerService"
@@ -60,6 +80,9 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
+
+        <!-- Service called if GCM token is changed -->
+
         <service
             android:name=".service.GCMTokenRefreshService"
             android:exported="false">
@@ -68,32 +91,22 @@
             </intent-filter>
         </service>
 
+        <service
+            android:name=".service.GCMRegisterIntentService"
+            android:exported="false" />
+
+        <!-- May be needed in the future -->
+
         <receiver android:name=".receiver.BootReceiver">
             <action android:name="android.intent.action.BOOT_COMPLETED" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </receiver>
 
-        <activity
-            android:name=".activity.LoginActivity"
-            android:label="@string/title_activity_login"
-            android:windowSoftInputMode="stateVisible" />
 
-        <service
-            android:name=".service.GCMRegisterIntentService"
-            android:exported="false" />
         <service
             android:name=".service.APIService"
             android:exported="false" />
-
-        <activity
-            android:name=".activity.SOSActivity"
-            android:label="@string/title_activity_sos" />
-        <activity
-            android:name=".activity.HomeActivity"
-            android:label="@string/app_name"
-            android:windowSoftInputMode="adjustPan"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
         <service
             android:name=".service.CustomService"

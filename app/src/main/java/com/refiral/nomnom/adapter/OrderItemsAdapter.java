@@ -2,6 +2,7 @@ package com.refiral.nomnom.adapter;
 
 import android.content.Context;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ public class OrderItemsAdapter extends BaseAdapter {
 
     private ArrayList<OrderItem> mOrderList;
     private LayoutInflater mInflater;
+    private static final String TAG = OrderItemsAdapter.class.getName();
 
     public OrderItemsAdapter(Context context, ArrayList<OrderItem> orderItems) {
         this.mOrderList = orderItems;
@@ -47,7 +49,7 @@ public class OrderItemsAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.simple_list_item_1, parent, false);
             vh = new ViewHolder();
-            vh.tvOrderItem = (TextView) convertView.findViewById(android.R.id.text1);
+            vh.tvOrderItem = (TextView) convertView.findViewById(R.id.text1);
             convertView.setTag(vh);
         } else {
             vh = (ViewHolder) convertView.getTag();

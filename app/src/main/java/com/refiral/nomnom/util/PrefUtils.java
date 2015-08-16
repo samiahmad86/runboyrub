@@ -56,11 +56,11 @@ public class PrefUtils {
     }
 
     public static void setStatus(int status) {
-        mEditor.putInt(Constants.Keys.KEY_STATUS, status).commit();
+        mEditor.putInt(Constants.Keys.KEY_DELIVERY_BOY_STATUS, status).commit();
     }
 
     public static int getStatus() {
-        return mSharedPrefs.getInt(Constants.Keys.KEY_STATUS, Constants.Values.STATUS_PLACEHOLDER);
+        return mSharedPrefs.getInt(Constants.Keys.KEY_DELIVERY_BOY_STATUS, Constants.Values.STATUS_PLACEHOLDER);
     }
 
     public static void setBillPhoto(String photo) {
@@ -71,11 +71,14 @@ public class PrefUtils {
         return mSharedPrefs.getString(Constants.Keys.KEY_BILL_PHOTO, null);
     }
 
-    public static void serviceWasDestroyed() {
-        mEditor.putBoolean("App", true).commit();
+    public static void setCurrentOrderID(long id) {
+        mEditor.putLong(Constants.Keys.KEY_ORDER_ID, id).commit();
     }
-    public static boolean wasServiceDestroyed() {
-        return mSharedPrefs.getBoolean("App", false);
+    public static long getCurrentOrderID() {
+        return mSharedPrefs.getLong(Constants.Keys.KEY_ORDER_ID, -1);
     }
 
+    public static void deleteCurrentOrderID() {
+        mEditor.remove(Constants.Keys.KEY_ORDER_ID).commit();
+    }
 }

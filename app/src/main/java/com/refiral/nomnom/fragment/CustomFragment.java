@@ -2,7 +2,6 @@ package com.refiral.nomnom.fragment;
 
 
 import android.app.Fragment;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -12,17 +11,18 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 import com.refiral.nomnom.R;
+import com.refiral.nomnom.activity.BaseActivity;
 import com.refiral.nomnom.adapter.OrderItemsAdapter;
 import com.refiral.nomnom.config.Constants;
 import com.refiral.nomnom.model.Order;
@@ -44,7 +44,6 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
     private static final String ARG_CODE = "code";
     private static Order order;
     private int code;
-    private boolean isKeyboardShown = false;
     private static final String TAG = CustomFragment.class.getName();
 
     /**
@@ -96,8 +95,20 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                     btnStatus.setText(getActivity().getResources().getString(R.string.reached_restaurant));
                 }
                 View vRest = view.findViewById(R.id.layout_restaurant);
+                if (getOrder() == null) {
+                    Log.d(TAG, "order is null");
+                } else {
+                    try {
+                        Log.d(TAG, "order isn't null " + (order.restaurant == null));
+                        Log.d(TAG, "order isn't null " + order.id + order.customer.name);
+                    } catch (NullPointerException ex) {
+                        Log.d(TAG, "restauraant is null");
+                    }
+                }
                 ((TextView) vRest.findViewById(R.id.tv_name)).setText(getOrder().restaurant.brand);
                 ((TextView) vRest.findViewById(R.id.tv_address)).setText(getOrder().restaurant.address);
+                ((TextView) vRest.findViewById(R.id.tv_details_heading)).
+                        setText(getActivity().getResources().getString(R.string.restaurant_details));
                 if (getOrder().restaurant.numbers.size() > 0) {
                     ((TextView) vRest.findViewById(R.id.tv_ph_no)).setText("Ph No. " + getOrder().restaurant.numbers.get(0).toString());
                 }
@@ -105,6 +116,8 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                 ((TextView) vCust.findViewById(R.id.tv_name)).setText(getOrder().customer.name);
                 ((TextView) vCust.findViewById(R.id.tv_address)).setText(getOrder().address.completeAddress);
                 ((TextView) vCust.findViewById(R.id.tv_ph_no)).setText("Ph No. " + getOrder().customer.primaryNumber);
+                ((TextView) vCust.findViewById(R.id.tv_details_heading)).
+                        setText(getActivity().getResources().getString(R.string.customer_details));
                 btnStatus.setOnClickListener(this);
                 break;
             }
@@ -154,6 +167,8 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                 ((TextView) vCust.findViewById(R.id.tv_name)).setText(getOrder().customer.name);
                 ((TextView) vCust.findViewById(R.id.tv_address)).setText(getOrder().address.completeAddress);
                 ((TextView) vCust.findViewById(R.id.tv_ph_no)).setText("Ph No. " + getOrder().customer.primaryNumber);
+                ((TextView) vCust.findViewById(R.id.tv_details_heading)).
+                        setText(getActivity().getResources().getString(R.string.customer_details));
                 ((ListView) view.findViewById(R.id.layout_order_list)).setAdapter(new OrderItemsAdapter(getActivity(), getOrder().orderItems));
                 Button btnStatus = (Button) view.findViewById(R.id.btn_status);
                 btnStatus.setText(getActivity().getResources().getString(R.string.reached_customer_address));
@@ -164,6 +179,7 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
             case Constants.Values.STATUS_DELIVERED: {
                 view = inflater.inflate(R.layout.fragment_delivered, container, false);
                 showKeyboard();
+                ((TextView) view.findViewById(R.id.tv_collectable_ammount)).setText(Html.fromHtml("<font color='#2876B4'>Collectable Ammount : </font> " + getOrder().totalAmount + " \u20B9"));
                 view.findViewById(R.id.btn_status).setOnClickListener(this);
                 break;
             }
@@ -208,7 +224,15 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                     }
 
                     case Constants.Values.STATUS_PICKUP_PAY: {
-                        StatusRequest sr = new StatusRequest(PrefUtils.getAccessToken(), getOrder().id, Constants.Values.STATUS_STR_PICKUP, new TypedFile("multipart/form-data", new File(PrefUtils.getBillPhoto())), ((EditText) getView().findViewById(R.id.et_payment_cash)).getText().toString());
+                        String amountPaid = ((EditText) getView().findViewById(R.id.et_payment_cash)).getText().toString();
+                        if (amountPaid.length() == 0 || !isAmount(amountPaid)) {
+                            Toast.makeText(getActivity(), "Enter valild amount", Toast.LENGTH_SHORT).show();
+                            view.setEnabled(true);
+                            return;
+                        }
+                        StatusRequest sr = new StatusRequest(PrefUtils.getAccessToken(), getOrder().id,
+                                Constants.Values.STATUS_STR_PICKUP, new TypedFile("multipart/form-data",
+                                new File(PrefUtils.getBillPhoto())), amountPaid);
                         // TODO: remove the comments once the API gets fixed
 //                        mSpiceManager.execute(sr, this);
                         onRequestSuccess(null);
@@ -222,10 +246,22 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                     }
 
                     case Constants.Values.STATUS_DELIVERED: {
-                        StatusRequest sr = new StatusRequest(PrefUtils.getAccessToken(), getOrder().id, Constants.Values.STATUS_STR_DELIVERED,
-                                ((EditText) getView().findViewById(R.id.et_payment_cash)).getText().toString(),
-                                ((EditText) getView().findViewById(R.id.et_payment_card)).getText().toString(),
-                                true, null, null);
+                        String paymentViaCash = ((EditText) getView().findViewById(R.id.et_payment_cash)).getText().toString();
+                        String paymentViaCard = ((EditText) getView().findViewById(R.id.et_payment_card)).getText().toString();
+
+                        if (paymentViaCard.length() == 0 && paymentViaCard.length() == 0) {
+                            Toast.makeText(getActivity(), "Enter valild amount", Toast.LENGTH_SHORT).show();
+                            return;
+                        } else if (paymentViaCard.length() == 0 && !isAmount(paymentViaCash)) {
+                            Toast.makeText(getActivity(), "Enter valild amount", Toast.LENGTH_SHORT).show();
+                            return;
+                        } else if (paymentViaCash.length() == 0 && !isAmount(paymentViaCard)) {
+                            Toast.makeText(getActivity(), "Enter valild amount", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        StatusRequest sr = new StatusRequest(PrefUtils.getAccessToken(), getOrder().id,
+                                Constants.Values.STATUS_STR_DELIVERED, paymentViaCash, paymentViaCard, true, null, null);
                         mSpiceManager.execute(sr, this);
                         break;
                     }
@@ -299,6 +335,8 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
             case Constants.Values.STATUS_DELIVERED: {
                 PrefUtils.setStatus(Constants.Values.STATUS_PLACEHOLDER);
                 PrefUtils.deleteOrder();
+                PrefUtils.deleteCurrentOrderID();
+                ((BaseActivity) getActivity()).getSupportActionBar().setTitle(R.string.app_name);
                 fil.onFragmentInteraction(Constants.Values.STATUS_PLACEHOLDER, null);
                 break;
             }
@@ -315,20 +353,20 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
         if (order == null) {
             String json = PrefUtils.getOrder();
             if (json != null) {
+                Log.d(TAG, json);
                 order = (new Gson()).fromJson(json, Order.class);
             }
         }
         return order;
     }
 
-    private void showKeyboard() {
-        ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-        isKeyboardShown = true;
-    }
 
-    private void hideKeyboard() {
-        ((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(getView().getWindowToken(), 0);
-        isKeyboardShown = false;
+    private boolean isAmount(String number) {
+        try {
+            Double.parseDouble(number);
+        } catch (NumberFormatException ex) {
+            return false;
+        }
+        return true;
     }
-
 }

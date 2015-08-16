@@ -1,6 +1,7 @@
 package com.refiral.nomnom.activity;
 
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -31,6 +32,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        final Toolbar tb = (Toolbar) findViewById(R.id.tb_login);
+        setSupportActionBar(tb);
         if (savedInstanceState != null) {
             return;
         }
@@ -55,7 +58,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_call) {
+            Router.callNumber(LoginActivity.this,
+                    getResources().getString(R.string.ph_no_1));
             return true;
         }
 
@@ -81,6 +86,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
         }
         final View button = findViewById(R.id.btn_login);
         button.setEnabled(false);
+        final View pb = findViewById(R.id.pb_login);
+        pb.setVisibility(View.VISIBLE);
         User user = new User(phoneNumber);
         LoginRequest mLoginRequest = new LoginRequest(user, DeviceUtils.getDeviceID(this), PrefUtils.getGcmToken(), "android");
         Log.d(TAG, "creating the request");
@@ -89,6 +96,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
             public void onRequestFailure(SpiceException spiceException) {
                 // fuck this shit
                 button.setEnabled(true);
+                pb.setVisibility(View.VISIBLE);
                 Log.d(TAG, "failed to login");
                 Log.d(TAG, spiceException.getMessage());
                 Log.d(TAG, spiceException.getLocalizedMessage());

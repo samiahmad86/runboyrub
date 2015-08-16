@@ -2,6 +2,7 @@ package com.refiral.nomnom.config;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 
 import com.refiral.nomnom.activity.HomeActivity;
 import com.refiral.nomnom.activity.LoginActivity;
@@ -9,6 +10,8 @@ import com.refiral.nomnom.activity.SOSActivity;
 import com.refiral.nomnom.activity.SplashActivity;
 import com.refiral.nomnom.service.CustomService;
 import com.refiral.nomnom.service.GCMRegisterIntentService;
+
+import java.net.URI;
 
 /**
  * Created by tanay on 7/8/15.
@@ -44,6 +47,12 @@ public class Router {
         intent.putExtra(Constants.Keys.KEY_LATITUDE, latitude);
         intent.putExtra(Constants.Keys.KEY_LONGITUDE, longitude);
         context.startService(intent);
+    }
+
+    public static void callNumber(Context context, String phoneNumber) {
+        Intent intent = new Intent(Intent.ACTION_CALL);
+        intent.setData(Uri.parse("tel:" + phoneNumber));
+        context.startActivity(intent);
     }
 
     /**

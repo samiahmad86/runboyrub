@@ -2,8 +2,10 @@ package com.refiral.nomnom.activity;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -48,18 +50,25 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
         fm = getSupportFragmentManager();
         ft = fm.beginTransaction();
 
+        long orderId = PrefUtils.getCurrentOrderID();
+
+        if(orderId != -1) {
+            getSupportActionBar().setTitle("Order ID : " + orderId);
+        }
+
         if (savedInstanceState != null) {
             return;
         }
+
+        LocalBroadcastManager.getInstance(this).
+                registerReceiver(brOrder, new IntentFilter(getResources().getString(R.string.intent_filter_order)));
 
         Log.d(TAG, "token " + PrefUtils.getAccessToken());
 
         Intent intent = getIntent();
         String previousClassName = intent.getStringExtra(Constants.Keys.STARTER_CLASS);
         if (previousClassName.equals(NotificationService.TAG)) {
-
-            Log.d(NotificationService.TAG, "" + PrefUtils.wasServiceDestroyed());
-
+            Log.d(TAG, "Order ID : " + intent.getStringExtra(Constants.Keys.KEY_ORDER_ID));
             // stop the notification service
             Intent iNotificationStop = new Intent(getResources().getString(R.string.intent_filter_notification));
             int notifId = intent.getIntExtra(Constants.Keys.KEY_NOTIF_ID, 1);
@@ -86,6 +95,13 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
         }
         onFragmentInteraction(status, null);
 
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(brOrder);
     }
 
     @Override
@@ -118,10 +134,13 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
                         Intent iLocationService = new Intent(getApplicationContext(), CustomService.class);
                         iLocationService.setAction(CustomService.ACTION_LOC);
                         // create pending intent for location alarm
+                        Log.d(TAG, "deleting stuff");
                         PendingIntent alarmIntent = PendingIntent.getService(getApplicationContext(), 0, iLocationService, PendingIntent.FLAG_UPDATE_CURRENT);
                         AlarmUtils.cancelAlarm(getApplicationContext(), alarmIntent);
                         PrefUtils.deleteAccessToken();
                         PrefUtils.deleteGcmToken();
+                        PrefUtils.deleteCurrentOrderID();
+                        PrefUtils.deleteOrder();
                         Router.startSplashActivity(HomeActivity.this, TAG);
                         HomeActivity.this.finish();
                     }
@@ -129,7 +148,7 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
                 return true;
             }
             case R.id.action_call: {
-                Router.startSOSActivity(HomeActivity.this, TAG);
+                Router.callNumber(HomeActivity.this, getResources().getString(R.string.ph_no_1));
             }
         }
 
@@ -156,4 +175,14 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
                     .commit();
         }
     }
+
+
+    // update the ui when the order is deleted
+    private BroadcastReceiver brOrder = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            getSupportActionBar().setTitle(R.string.app_name);
+            onFragmentInteraction(Constants.Values.STATUS_PLACEHOLDER, null);
+        }
+    };
 }

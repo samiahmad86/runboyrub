@@ -6,70 +6,86 @@
 
     <ImageView
         android:id="@+id/iv_gola"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="50dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginLeft="20dp"
         android:layout_marginTop="50dp"
-        android:src="@drawable/gola" />
+        android:src="@drawable/dot_blue" />
 
-    <LinearLayout
-        android:id="@+id/ll_payment"
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/tv_payment_heading"
+        style="@style/BigBlueHeadingStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/iv_gola"
         android:layout_marginLeft="20dp"
         android:layout_toRightOf="@id/iv_gola"
+        android:text="@string/collected_ammount" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/tv_collectable_ammount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/tv_payment_heading"
+        android:layout_below="@id/tv_payment_heading"
+        android:layout_marginTop="5dp"
+        android:textColor="@color/black"
+        android:text="@string/abc_action_bar_home_description"
+        android:textSize="15sp" />
+
+
+    <LinearLayout
+        android:id="@+id/ll_payment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/tv_payment_heading"
+        android:layout_below="@id/tv_collectable_ammount"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="10dp"
         android:orientation="vertical">
 
-        <android.support.v7.widget.AppCompatTextView
-            android:id="@+id/tv_payment_heading"
-            style="@style/BigBlueHeadingStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/collected_ammount" />
-
-        <android.support.v7.widget.AppCompatTextView
-            android:id="@+id/tv_collectable_ammount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:textSize="15sp" />
 
         <android.support.v7.widget.AppCompatEditText
             android:id="@+id/et_payment_card"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="60dp"
             android:layout_marginTop="5dp"
             android:background="@drawable/light_blue_rectangle"
             android:hint="@string/card"
-            android:singleLine="true"
             android:inputType="number"
-            android:padding="5dp" />
+            android:padding="15dp"
+            android:singleLine="true"
+            android:textColor="@color/black"
+            android:textColorHint="@color/black"
+            android:textSize="20sp" />
 
         <android.support.v7.widget.AppCompatEditText
             android:id="@+id/et_payment_cash"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:singleLine="true"
-            android:layout_marginTop="5dp"
-            android:inputType="number"
+            android:layout_height="60dp"
+            android:layout_marginTop="10dp"
             android:background="@drawable/light_blue_rectangle"
             android:hint="@string/cash"
-            android:padding="5dp" />
+            android:inputType="number"
+            android:padding="15dp"
+            android:singleLine="true"
+            android:textColor="@color/black"
+            android:textColorHint="@color/black"
+            android:textSize="20sp" />
 
     </LinearLayout>
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/btn_status"
         style="@style/BigBlueButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
         android:layout_alignParentBottom="false"
-        android:imeOptions="actionDone"
         android:layout_below="@id/ll_payment"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
         android:layout_marginTop="20dp"
+        android:imeOptions="actionDone"
         android:text="@string/done" />
 
 </RelativeLayout>

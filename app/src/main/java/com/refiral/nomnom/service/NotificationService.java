@@ -61,6 +61,7 @@ public class NotificationService extends Service {
                 activityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 activityIntent.putExtra(Constants.Keys.STARTER_CLASS, TAG);
                 activityIntent.putExtra(Constants.Keys.KEY_NOTIF_ID, startId);
+                activityIntent.putExtra(Constants.Keys.KEY_ORDER_ID, intent.getStringExtra(Constants.Keys.KEY_ORDER_ID));
                 PendingIntent pi = PendingIntent.getActivity(NotificationService.this, AtomicUtils.getRequestCode(), activityIntent, 0);
                 notifBuilder.setContentIntent(pi);
                 notifBuilder.setOngoing(true);
@@ -97,7 +98,6 @@ public class NotificationService extends Service {
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy called");
-        PrefUtils.serviceWasDestroyed();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(brMedia);
     }
 
