@@ -54,7 +54,7 @@ public class NotificationService extends Service {
 
             if (CustomService.TAG.equals(action)) {
                 NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(NotificationService.this);
-                notifBuilder.setSmallIcon(R.mipmap.ic_launcher).setContentTitle("New order").setContentText("Select this notification to stop the song.");
+                notifBuilder.setSmallIcon(R.mipmap.ic_launcher).setContentTitle("New order").setContentText("You have a new order.");
 
                 // start the HomeActivity on notification click
                 Intent activityIntent = new Intent(NotificationService.this, HomeActivity.class);
@@ -83,7 +83,7 @@ public class NotificationService extends Service {
                 // set the alarm tone
                 Uri alarmToneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
                 AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-                am.setStreamVolume(AudioManager.STREAM_MUSIC, 0 /*50*/, 0);
+                am.setStreamVolume(AudioManager.STREAM_MUSIC, 50, 0);
                 MediaPlayer player = MediaPlayer.create(this, alarmToneUri);
                 player.setLooping(true);
                 player.start();

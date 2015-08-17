@@ -32,8 +32,6 @@ import com.refiral.nomnom.util.PrefUtils;
 
 import java.io.File;
 
-import retrofit.mime.TypedFile;
-
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link CustomFragment#newInstance} factory method to
@@ -115,6 +113,7 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
             case Constants.Values.STATUS_PICKUP_MATCH: {
                 view = inflater.inflate(R.layout.fragment_pickup_match, container, false);
                 ((TextView) view.findViewById(R.id.tv_item_count)).setText("Items = " + getOrder().orderItems.size());
+                ((TextView) view.findViewById(R.id.tv_payable_amount)).setText(Html.fromHtml("<font color='#2876B4'>Payable Amount : </font> " + getOrder().totalAmount + " \u20B9"));
                 ((ListView) view.findViewById(R.id.layout_order_list)).setAdapter(new OrderItemsAdapter(getActivity(), getOrder().orderItems));
                 view.findViewById(R.id.btn_status).setOnClickListener(this);
                 break;
@@ -123,7 +122,7 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
             case Constants.Values.STATUS_PICKUP_PAY: {
                 view = inflater.inflate(R.layout.fragment_delivered, container, false);
                 ((TextView) view.findViewById(R.id.tv_payment_heading)).setText(getActivity().getResources().getString(R.string.pay_to_restaurant));
-                ((TextView) view.findViewById(R.id.tv_collectable_ammount)).setText(Html.fromHtml("<font color='#2876B4'>Payable Ammount : </font> " + getOrder().totalAmount + " \u20B9"));
+                ((TextView) view.findViewById(R.id.tv_collectable_ammount)).setText(Html.fromHtml("<font color='#2876B4'>Payable Amount : </font> " + getOrder().totalAmount + " \u20B9"));
                 EditText etAmt = (EditText) view.findViewById(R.id.et_payment_cash);
                 etAmt.setHint("");
                 etAmt.requestFocus();
@@ -224,11 +223,10 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                             return;
                         }
                         StatusRequest sr = new StatusRequest(PrefUtils.getAccessToken(), getOrder().id,
-                                Constants.Values.STATUS_STR_PICKUP, new TypedFile("multipart/form-data",
-                                new File(PrefUtils.getBillPhoto())), amountPaid);
-                        // TODO: remove the comments once the API gets fixed
-//                        mSpiceManager.execute(sr, this);
-                        onRequestSuccess(null);
+                                Constants.Values.STATUS_STR_PICKUP, PrefUtils.getBillPhoto(), amountPaid);
+                        toggleProgressBar(true);
+                        mSpiceManager.execute(sr, this);
+//                        onRequestSuccess(null);
                         break;
                     }
 
@@ -243,17 +241,32 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                         String paymentViaCash = ((EditText) getView().findViewById(R.id.et_payment_cash)).getText().toString();
                         String paymentViaCard = ((EditText) getView().findViewById(R.id.et_payment_card)).getText().toString();
 
-                        if (paymentViaCard.length() == 0 && paymentViaCard.length() == 0) {
+
+                        if (paymentViaCard.length() == 0 && paymentViaCash.length() == 0) {
                             Toast.makeText(getActivity(), "Enter valid amount", Toast.LENGTH_SHORT).show();
+                            view.setEnabled(true);
                             return;
                         } else if (paymentViaCard.length() == 0 && !isAmount(paymentViaCash)) {
+                            Log.d(TAG, "hi there");
                             Toast.makeText(getActivity(), "Enter valid amount", Toast.LENGTH_SHORT).show();
+                            view.setEnabled(true);
                             return;
                         } else if (paymentViaCash.length() == 0 && !isAmount(paymentViaCard)) {
                             Toast.makeText(getActivity(), "Enter valid amount", Toast.LENGTH_SHORT).show();
+                            view.setEnabled(true);
                             return;
-                        } else if(Double.parseDouble(paymentViaCard) + Double.parseDouble(paymentViaCash) != Double.parseDouble(getOrder().totalAmount)) {
+                        }
+
+                        if (paymentViaCard.length() == 0) {
+                            paymentViaCard = "0";
+                        } else if (paymentViaCash.length() == 0) {
+                            paymentViaCash = "0";
+                        }
+
+                        if (Double.parseDouble(paymentViaCard) + Double.parseDouble(paymentViaCash) != Double.parseDouble(getOrder().totalAmount)) {
+
                             Toast.makeText(getActivity(), "Enter valid amount", Toast.LENGTH_SHORT).show();
+                            view.setEnabled(true);
                             return;
                         }
 
@@ -293,12 +306,10 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
     @Override
     public void onRequestSuccess(SimpleResponse simpleResponse) {
 
-        toggleProgressBar(false);
-
         switch (code) {
 
             case Constants.Values.STATUS_CONFIRMED: {
-                Log.d(TAG, "status confirmed");
+                toggleProgressBar(false);
                 PrefUtils.setStatus(Constants.Values.STATUS_ARRIVED_AT_RESTAURANT);
                 if (getView() != null) {
                     Button btnStatus = (Button) getView().findViewById(R.id.btn_status);
@@ -309,6 +320,7 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                 break;
             }
             case Constants.Values.STATUS_ARRIVED_AT_RESTAURANT: {
+                toggleProgressBar(false);
                 PrefUtils.setStatus(Constants.Values.STATUS_PICKUP_MATCH);
                 fil.onFragmentInteraction(Constants.Values.STATUS_PICKUP_MATCH, null);
                 break;
@@ -321,6 +333,7 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
             }
 
             case Constants.Values.STATUS_PICKUP_PAY: {
+                toggleProgressBar(false);
                 PrefUtils.setStatus(Constants.Values.STATUS_REACHED_CUSTOMER_ADDRESS);
                 fil.onFragmentInteraction(Constants.Values.STATUS_REACHED_CUSTOMER_ADDRESS, null);
                 break;
@@ -371,13 +384,12 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
     }
 
     /**
-     *
      * @param val : send true to show progress bar and false to hide
      */
     private void toggleProgressBar(boolean val) {
         View view = getView();
-        if(view != null) {
-            if(val) {
+        if (view != null) {
+            if (val) {
                 view.findViewById(R.id.pb_home).setVisibility(View.VISIBLE);
             } else {
                 view.findViewById(R.id.pb_home).setVisibility(View.GONE);

@@ -124,7 +124,7 @@ public class CustomService extends Service implements GoogleApiClient.Connection
     }
 
     private void getOrder(int orderId, final String status) {
-        String orderStr = PrefUtils.getOrder();
+        final String orderStr = PrefUtils.getOrder();
         if(orderStr != null) {
             Gson gson = new Gson();
             Order order = gson.fromJson(orderStr, Order.class);
@@ -134,7 +134,7 @@ public class CustomService extends Service implements GoogleApiClient.Connection
             }
         }
         final OrderRequest or = new OrderRequest(PrefUtils.getAccessToken(), orderId);
-        spiceManager.execute(or, new RequestListener<Order>() {
+        spiceManager.execute(or, null, 0, new RequestListener<Order>() {
             @Override
             public void onRequestFailure(SpiceException spiceException) {
 

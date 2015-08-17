@@ -55,7 +55,19 @@ public class OrderItemsAdapter extends BaseAdapter {
             vh = (ViewHolder) convertView.getTag();
         }
         OrderItem oi = mOrderList.get(i);
-        vh.tvOrderItem.setText(Html.fromHtml("<font color='#2878B3'>" + oi.quantity + "</font> " + oi.dishVariation.dish.dishName));
+        String dishName = oi.dishVariation.dish.dishName;
+        String dishQuantity = oi.quantity + " ";
+        if(oi.dishVariation.variety != null) {
+            dishName = oi.dishVariation.variety + " " + dishName;
+        }
+        if(oi.dishVariation.portion != null) {
+            dishQuantity = dishQuantity + "X " + oi.dishVariation.portion + " ";
+            Log.d(TAG, dishQuantity);
+        } else {
+            Log.d(TAG, "portion is half");
+        }
+        Log.d(TAG, dishName + " " + dishQuantity);
+        vh.tvOrderItem.setText(Html.fromHtml("<font color='#2878B3'>" + dishQuantity + "</font> " + dishName));
         return convertView;
     }
 

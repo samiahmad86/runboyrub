@@ -17,20 +17,20 @@ public class StatusRequest extends RetrofitSpiceRequest<SimpleResponse, APIInter
     private String mAmountPaidInCash;
     private String mAmountPaidViaCard;
     private boolean isPaid;     // for the customer
-    private TypedFile billPhoto; // photo of the bill taken when receiving the order from the Restaurant.
+    private String billPhoto; // photo of the bill taken when receiving the order from the Restaurant.
     private String totalAmt;
 
     public StatusRequest(String accessToken, long orderId, String deliveryStatus) {
         this(accessToken, orderId, deliveryStatus, null, null, false, null, null);
     }
 
-    public StatusRequest(String accessToken, long orderId, String deliveryStatus, TypedFile billPhoto, String amount) {
+    public StatusRequest(String accessToken, long orderId, String deliveryStatus, String billPhoto, String amount) {
         this(accessToken, orderId, deliveryStatus, null, null, false, billPhoto, amount);
     }
 
 
 
-    public StatusRequest(String accessToken, long orderId, String deliveryStatus, String ammountPaidInCash, String ammountPaidViaCard, boolean isPaid, TypedFile billPhoto, String amount) {
+    public StatusRequest(String accessToken, long orderId, String deliveryStatus, String ammountPaidInCash, String ammountPaidViaCard, boolean isPaid, String billPhoto, String amount) {
         super(SimpleResponse.class, APIInterface.class);
         this.mAccessToken = accessToken;
         this.mOrderId = orderId;
@@ -46,7 +46,7 @@ public class StatusRequest extends RetrofitSpiceRequest<SimpleResponse, APIInter
     @Override
     public SimpleResponse loadDataFromNetwork() throws Exception {
         if(isPaid) {
-            return getService().updateStatus(mAccessToken, mOrderId, mDeliveryStatus, mAmountPaidViaCard, mAmountPaidInCash);
+            return getService().updateStatusDelivered(mAccessToken, mOrderId, mDeliveryStatus, mAmountPaidViaCard, mAmountPaidInCash);
         } else if(billPhoto == null) {
             return getService().updateStatus(mAccessToken, mOrderId, mDeliveryStatus);
         } else {

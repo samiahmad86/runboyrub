@@ -20,6 +20,6 @@ public class OrderRequest extends RetrofitSpiceRequest<Order, APIInterface> {
 
     @Override
     public Order loadDataFromNetwork() throws Exception {
-        return getService().getOrder(mAccessToken, mOrderId);
+        return getService().getOrder(mAccessToken, mOrderId, System.currentTimeMillis());
     }
 }

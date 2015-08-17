@@ -30,14 +30,15 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/tv_item_count"
         android:layout_below="@id/tv_item_count"
-        android:layout_above="@+id/tv_payable_ammount"
+        android:layout_above="@+id/tv_payable_amount"
         android:layout_marginTop="10dp" />
 
     <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/tv_payable_ammount"
+        android:id="@+id/tv_payable_amount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/tv_item_count"
+        android:textColor="@color/black"
         android:layout_above="@id/btn_status"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"

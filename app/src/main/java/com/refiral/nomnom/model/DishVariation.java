@@ -14,4 +14,6 @@ public class DishVariation {
     public Dish dish;
     @Expose
     public String variety;
+    @Expose
+    public String portion;
 }

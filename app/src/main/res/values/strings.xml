@@ -2,7 +2,7 @@
 
     <!-- config strings -->
     <string name="gcm_sender_id">702331513339</string>
-    <string name="app_name">NomNom</string>
+    <string name="app_name">NomNom Runner</string>
 
     <!-- intent filters -->
     <string name="intent_filter_notification">com.refiral.nomnom.notification</string>
