@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
@@ -52,7 +53,7 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
 
         long orderId = PrefUtils.getCurrentOrderID();
 
-        if(orderId != -1) {
+        if (orderId != -1) {
             getSupportActionBar().setTitle("Order ID : " + orderId);
         }
 
@@ -84,13 +85,12 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
             iLocationService.setAction(CustomService.ACTION_LOC);
             // create pending intent for location alarm
             PendingIntent alarmIntent = PendingIntent.getService(getApplicationContext(), 0, iLocationService, PendingIntent.FLAG_UPDATE_CURRENT);
-            // TODO: set value to five mintues
-            AlarmUtils.setRepeatingAlarm(getApplicationContext(), alarmIntent, 60000 /*Constants.Values.FIVE_MINUTES_IN_MILLIS*/);
+            AlarmUtils.setRepeatingAlarm(getApplicationContext(), alarmIntent, Constants.Values.FIVE_MINUTES_IN_MILLIS);
         }
 
         int status = PrefUtils.getStatus();
         if (status == Constants.Values.STATUS_PICKUP_PAY
-                || status == Constants.Values.STATUS_PICKUP_MATCH || status == Constants.Values.STATUS_PICKUP_CONFIRM) {
+                || status == Constants.Values.STATUS_PICKUP_MATCH || status == Constants.Values.STATUS_PICKUP_CONFIRM_PHOTO) {
             status = Constants.Values.STATUS_PICKUP_MATCH;
         }
         onFragmentInteraction(status, null);
@@ -120,31 +120,37 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
 
         switch (id) {
             case R.id.action_logout: {
-                LogoutRequest lor = new LogoutRequest(PrefUtils.getAccessToken());
-                getSpiceManager().execute(lor, new RequestListener<SimpleResponse>() {
-                    @Override
-                    public void onRequestFailure(SpiceException spiceException) {
+                if (PrefUtils.getStatus() == Constants.Values.STATUS_PLACEHOLDER) {
+                    LogoutRequest lor = new LogoutRequest(PrefUtils.getAccessToken());
+                    getSpiceManager().execute(lor, new RequestListener<SimpleResponse>() {
+                        @Override
+                        public void onRequestFailure(SpiceException spiceException) {
 
-                    }
+                        }
 
-                    @Override
-                    public void onRequestSuccess(SimpleResponse simpleResponse) {
-                        // actions to do on successful logout
-                        // trigger service to get location for the first time
-                        Intent iLocationService = new Intent(getApplicationContext(), CustomService.class);
-                        iLocationService.setAction(CustomService.ACTION_LOC);
-                        // create pending intent for location alarm
-                        Log.d(TAG, "deleting stuff");
-                        PendingIntent alarmIntent = PendingIntent.getService(getApplicationContext(), 0, iLocationService, PendingIntent.FLAG_UPDATE_CURRENT);
-                        AlarmUtils.cancelAlarm(getApplicationContext(), alarmIntent);
-                        PrefUtils.deleteAccessToken();
-                        PrefUtils.deleteGcmToken();
-                        PrefUtils.deleteCurrentOrderID();
-                        PrefUtils.deleteOrder();
-                        Router.startSplashActivity(HomeActivity.this, TAG);
-                        HomeActivity.this.finish();
-                    }
-                });
+                        @Override
+                        public void onRequestSuccess(SimpleResponse simpleResponse) {
+                            // actions to do on successful logout
+                            // trigger service to get location for the first time
+                            Intent iLocationService = new Intent(getApplicationContext(), CustomService.class);
+                            iLocationService.setAction(CustomService.ACTION_LOC);
+                            // create pending intent for location alarm
+                            Log.d(TAG, "deleting stuff");
+                            PendingIntent alarmIntent = PendingIntent.getService(getApplicationContext(), 0, iLocationService, PendingIntent.FLAG_UPDATE_CURRENT);
+                            AlarmUtils.cancelAlarm(getApplicationContext(), alarmIntent);
+                            PrefUtils.deleteAccessToken();
+                            PrefUtils.deleteGcmToken();
+                            PrefUtils.deleteCurrentOrderID();
+                            PrefUtils.deleteOrder();
+                            PrefUtils.setStatus(Constants.Values.STATUS_PLACEHOLDER);
+                            Router.startSplashActivity(HomeActivity.this, TAG);
+                            HomeActivity.this.finish();
+                        }
+                    });
+                } else {
+                    Toast.makeText(HomeActivity.this, "You cannot logout while an order is in progress",
+                            Toast.LENGTH_SHORT).show();
+                }
                 return true;
             }
             case R.id.action_call: {
@@ -162,12 +168,14 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
             ft.replace(R.id.fl_home, CameraFragment.newInstance(), "" + code)
                     .addToBackStack("" + code)
                     .commit();
-        } else if (code == Constants.Values.STATUS_PICKUP_PAY || code == Constants.Values.STATUS_PICKUP_CONFIRM) {
+        } else if (code == Constants.Values.STATUS_PICKUP_PAY ||
+                code == Constants.Values.STATUS_PICKUP_CONFIRM_PHOTO) {
             ft.replace(R.id.fl_home, CustomFragment.newInstance(code), "" + code)
                     .addToBackStack("" + code)
                     .commit();
         } else if (code == Constants.Values.STATUS_REACHED_CUSTOMER_ADDRESS) {
-            fm.popBackStack("" + Constants.Values.STATUS_PICKUP_MATCH, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            Log.d(TAG, "popping back stack");
+            fm.popBackStack("" + Constants.Values.STATUS_PICKUP_PHOTO, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             ft.replace(R.id.fl_home, CustomFragment.newInstance(code), "" + code)
                     .commit();
         } else {

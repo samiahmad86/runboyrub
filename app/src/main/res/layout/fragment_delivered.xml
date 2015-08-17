@@ -29,8 +29,8 @@
         android:layout_alignLeft="@id/tv_payment_heading"
         android:layout_below="@id/tv_payment_heading"
         android:layout_marginTop="5dp"
-        android:textColor="@color/black"
         android:text="@string/abc_action_bar_home_description"
+        android:textColor="@color/black"
         android:textSize="15sp" />
 
 
@@ -47,31 +47,17 @@
 
         <android.support.v7.widget.AppCompatEditText
             android:id="@+id/et_payment_card"
+            style="@style/BlueTextBoxStyle"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
             android:layout_marginTop="5dp"
-            android:background="@drawable/light_blue_rectangle"
-            android:hint="@string/card"
-            android:inputType="number"
-            android:padding="15dp"
-            android:singleLine="true"
-            android:textColor="@color/black"
-            android:textColorHint="@color/black"
-            android:textSize="20sp" />
+            android:hint="@string/card" />
 
         <android.support.v7.widget.AppCompatEditText
             android:id="@+id/et_payment_cash"
+            style="@style/BlueTextBoxStyle"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
             android:layout_marginTop="10dp"
-            android:background="@drawable/light_blue_rectangle"
-            android:hint="@string/cash"
-            android:inputType="number"
-            android:padding="15dp"
-            android:singleLine="true"
-            android:textColor="@color/black"
-            android:textColorHint="@color/black"
-            android:textSize="20sp" />
+            android:hint="@string/cash" />
 
     </LinearLayout>
 
@@ -87,5 +73,10 @@
         android:layout_marginTop="20dp"
         android:imeOptions="actionDone"
         android:text="@string/done" />
+
+
+    <include
+        android:id="@+id/pb_home"
+        layout="@layout/layout_large_progress_bar"/>
 
 </RelativeLayout>

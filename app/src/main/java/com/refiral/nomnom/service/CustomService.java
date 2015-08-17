@@ -146,8 +146,7 @@ public class CustomService extends Service implements GoogleApiClient.Connection
                 String orderJSON = gson.toJson(order);
                 Log.d(TAG, orderJSON);
                 // start the service to build the notification if the order is new
-                //TODO: remove the true
-                if(true || (status != null && status.equalsIgnoreCase(Constants.Values.ORDER_STATUS_NEW))) {
+                if(status != null && status.equalsIgnoreCase(Constants.Values.ORDER_STATUS_NEW)) {
                     Intent iNotificationService = new Intent(CustomService.this, NotificationService.class);
                     iNotificationService.setAction(TAG);
                     startService(iNotificationService);

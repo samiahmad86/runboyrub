@@ -151,9 +151,9 @@ public class CameraFragment extends BaseFragment implements SurfaceHolder.Callba
             ex.printStackTrace();
         }
         if(file.exists()) {
-            PrefUtils.setStatus(Constants.Values.STATUS_PICKUP_CONFIRM);
+            PrefUtils.setStatus(Constants.Values.STATUS_PICKUP_CONFIRM_PHOTO);
             PrefUtils.setBillPhoto(file.getAbsolutePath());
-            fil.onFragmentInteraction(Constants.Values.STATUS_PICKUP_CONFIRM, null);
+            fil.onFragmentInteraction(Constants.Values.STATUS_PICKUP_CONFIRM_PHOTO, null);
         } else {
             refreshCamera();
         }

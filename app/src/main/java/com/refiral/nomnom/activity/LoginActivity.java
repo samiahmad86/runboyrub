@@ -34,12 +34,26 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
 
         final Toolbar tb = (Toolbar) findViewById(R.id.tb_login);
         setSupportActionBar(tb);
+        findViewById(R.id.btn_login).setOnClickListener(this);
+        ((EditText) findViewById(R.id.et_login_number)).setOnEditorActionListener(this);
+
+
         if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey("ProgressBar")) {
+                if (savedInstanceState.getInt("ProgressBar") == View.VISIBLE) {
+                    findViewById(R.id.pb_login).setVisibility(View.VISIBLE);
+                }
+            }
             return;
         }
 
-        findViewById(R.id.btn_login).setOnClickListener(this);
-        ((EditText) findViewById(R.id.et_login_number)).setOnEditorActionListener(this);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outstate) {
+        Log.d(TAG, "" + (findViewById(R.id.pb_login).getVisibility() == View.VISIBLE));
+        outstate.putInt("ProgressBar", findViewById(R.id.pb_login).getVisibility());
+        super.onSaveInstanceState(outstate);
     }
 
 
@@ -116,7 +130,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
 
     @Override
     public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-        if(i == EditorInfo.IME_ACTION_DONE) {
+        if (i == EditorInfo.IME_ACTION_DONE) {
             registerUser(textView.getText().toString());
         }
         return false;

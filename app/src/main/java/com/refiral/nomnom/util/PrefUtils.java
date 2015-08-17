@@ -81,4 +81,5 @@ public class PrefUtils {
     public static void deleteCurrentOrderID() {
         mEditor.remove(Constants.Keys.KEY_ORDER_ID).commit();
     }
+
 }

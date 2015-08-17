@@ -95,16 +95,6 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                     btnStatus.setText(getActivity().getResources().getString(R.string.reached_restaurant));
                 }
                 View vRest = view.findViewById(R.id.layout_restaurant);
-                if (getOrder() == null) {
-                    Log.d(TAG, "order is null");
-                } else {
-                    try {
-                        Log.d(TAG, "order isn't null " + (order.restaurant == null));
-                        Log.d(TAG, "order isn't null " + order.id + order.customer.name);
-                    } catch (NullPointerException ex) {
-                        Log.d(TAG, "restauraant is null");
-                    }
-                }
                 ((TextView) vRest.findViewById(R.id.tv_name)).setText(getOrder().restaurant.brand);
                 ((TextView) vRest.findViewById(R.id.tv_address)).setText(getOrder().restaurant.address);
                 ((TextView) vRest.findViewById(R.id.tv_details_heading)).
@@ -148,8 +138,8 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                 break;
             }
 
-            case Constants.Values.STATUS_PICKUP_CONFIRM: {
-                view = inflater.inflate(R.layout.fragment_pickup_confirm, container, false);
+            case Constants.Values.STATUS_PICKUP_CONFIRM_PHOTO: {
+                view = inflater.inflate(R.layout.fragment_pickup_confirm_photo, container, false);
                 Log.d(TAG, PrefUtils.getBillPhoto());
                 File fBill = new File(PrefUtils.getBillPhoto());
                 if (fBill.exists()) {
@@ -203,17 +193,20 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
             case R.id.btn_status: {
 
                 view.setEnabled(false);
+                hideKeyboard();
 
                 switch (code) {
 
                     case Constants.Values.STATUS_CONFIRMED: {
                         StatusRequest sr = new StatusRequest(PrefUtils.getAccessToken(), getOrder().id, Constants.Values.STATUS_STR_CONFIRMED);
+                        toggleProgressBar(true);
                         mSpiceManager.execute(sr, this);
                         break;
                     }
 
                     case Constants.Values.STATUS_ARRIVED_AT_RESTAURANT: {
                         StatusRequest sr = new StatusRequest(PrefUtils.getAccessToken(), getOrder().id, Constants.Values.STATUS_STR_ARRIVED);
+                        toggleProgressBar(true);
                         mSpiceManager.execute(sr, this);
                         break;
                     }
@@ -241,6 +234,7 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
 
                     case Constants.Values.STATUS_REACHED_CUSTOMER_ADDRESS: {
                         StatusRequest sr = new StatusRequest(PrefUtils.getAccessToken(), getOrder().id, Constants.Values.STATUS_STR_REACHED);
+                        toggleProgressBar(true);
                         mSpiceManager.execute(sr, this);
                         break;
                     }
@@ -250,18 +244,22 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                         String paymentViaCard = ((EditText) getView().findViewById(R.id.et_payment_card)).getText().toString();
 
                         if (paymentViaCard.length() == 0 && paymentViaCard.length() == 0) {
-                            Toast.makeText(getActivity(), "Enter valild amount", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "Enter valid amount", Toast.LENGTH_SHORT).show();
                             return;
                         } else if (paymentViaCard.length() == 0 && !isAmount(paymentViaCash)) {
-                            Toast.makeText(getActivity(), "Enter valild amount", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "Enter valid amount", Toast.LENGTH_SHORT).show();
                             return;
                         } else if (paymentViaCash.length() == 0 && !isAmount(paymentViaCard)) {
-                            Toast.makeText(getActivity(), "Enter valild amount", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "Enter valid amount", Toast.LENGTH_SHORT).show();
+                            return;
+                        } else if(Double.parseDouble(paymentViaCard) + Double.parseDouble(paymentViaCash) != Double.parseDouble(getOrder().totalAmount)) {
+                            Toast.makeText(getActivity(), "Enter valid amount", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
                         StatusRequest sr = new StatusRequest(PrefUtils.getAccessToken(), getOrder().id,
                                 Constants.Values.STATUS_STR_DELIVERED, paymentViaCash, paymentViaCard, true, null, null);
+                        toggleProgressBar(true);
                         mSpiceManager.execute(sr, this);
                         break;
                     }
@@ -288,11 +286,14 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
     public void onRequestFailure(SpiceException spiceException) {
         if (getView() != null) {
             getView().findViewById(R.id.btn_status).setEnabled(true);
+            toggleProgressBar(false);
         }
     }
 
     @Override
     public void onRequestSuccess(SimpleResponse simpleResponse) {
+
+        toggleProgressBar(false);
 
         switch (code) {
 
@@ -307,7 +308,6 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                 code = Constants.Values.STATUS_ARRIVED_AT_RESTAURANT;
                 break;
             }
-
             case Constants.Values.STATUS_ARRIVED_AT_RESTAURANT: {
                 PrefUtils.setStatus(Constants.Values.STATUS_PICKUP_MATCH);
                 fil.onFragmentInteraction(Constants.Values.STATUS_PICKUP_MATCH, null);
@@ -369,4 +369,20 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
         }
         return true;
     }
+
+    /**
+     *
+     * @param val : send true to show progress bar and false to hide
+     */
+    private void toggleProgressBar(boolean val) {
+        View view = getView();
+        if(view != null) {
+            if(val) {
+                view.findViewById(R.id.pb_home).setVisibility(View.VISIBLE);
+            } else {
+                view.findViewById(R.id.pb_home).setVisibility(View.GONE);
+            }
+        }
+    }
+
 }
