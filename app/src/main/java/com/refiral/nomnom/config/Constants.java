@@ -25,6 +25,7 @@ public class Constants {
         public static final String KEY_CONTACT_NUMBER = "contact_number";
         public static final String KEY_DELIVERY_BOY_STATUS = "delivery_boy_status";
         public static final String KEY_STATUS = "status";
+        public static final String KEY_ORDER_PROGRESS = "order_progress";
     }
 
     public class Values {

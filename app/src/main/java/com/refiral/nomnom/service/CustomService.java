@@ -74,7 +74,7 @@ public class CustomService extends Service implements GoogleApiClient.Connection
                 buildGoogleApiClientObject();
                 return START_STICKY;
             } else if (ACTION_ORDER.equals(action)) {
-                getOrder(intent.getIntExtra(Constants.Keys.KEY_ORDER_ID, -1), intent.getStringExtra(Constants.Keys.KEY_STATUS));
+                getOrder(intent.getLongExtra(Constants.Keys.KEY_ORDER_ID, -1L), intent.getStringExtra(Constants.Keys.KEY_STATUS));
                 return START_STICKY;
             }
         }
@@ -92,7 +92,6 @@ public class CustomService extends Service implements GoogleApiClient.Connection
             spiceManager.execute(lr, new RequestListener<SimpleResponse>() {
                 @Override
                 public void onRequestFailure(SpiceException spiceException) {
-
                 }
 
                 @Override
@@ -123,21 +122,12 @@ public class CustomService extends Service implements GoogleApiClient.Connection
         mGoogleApiClient.connect();
     }
 
-    private void getOrder(int orderId, final String status) {
-        final String orderStr = PrefUtils.getOrder();
-        if(orderStr != null) {
-            Gson gson = new Gson();
-            Order order = gson.fromJson(orderStr, Order.class);
-            // the order id is different from the current order so ignore this push
-            if(orderId != order.id) {
-                return;
-            }
-        }
+    private void getOrder(long orderId, final String status) {
+        Log.d(TAG, "sending order request with id " + orderId);
         final OrderRequest or = new OrderRequest(PrefUtils.getAccessToken(), orderId);
         spiceManager.execute(or, null, 0, new RequestListener<Order>() {
             @Override
             public void onRequestFailure(SpiceException spiceException) {
-
             }
 
             @Override
@@ -150,8 +140,11 @@ public class CustomService extends Service implements GoogleApiClient.Connection
                     Intent iNotificationService = new Intent(CustomService.this, NotificationService.class);
                     iNotificationService.setAction(TAG);
                     startService(iNotificationService);
+                    PrefUtils.orderIsInProgress(true);
+                    Log.d(TAG, "order is in progress set to true " + PrefUtils.isOrderInProgress());
                     PrefUtils.setCurrentOrderID(order.id);
                 }
+                Log.d(TAG, "saving order id is" + order.id + " json is " + orderJSON);
                 PrefUtils.saveOrder(orderJSON);
                 CustomService.this.stopSelf();
             }

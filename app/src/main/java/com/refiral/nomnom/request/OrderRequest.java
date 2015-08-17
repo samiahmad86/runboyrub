@@ -10,9 +10,9 @@ import com.refiral.nomnom.model.Order;
 public class OrderRequest extends RetrofitSpiceRequest<Order, APIInterface> {
 
     private String mAccessToken;
-    private int mOrderId;
+    private long mOrderId;
 
-    public OrderRequest(String accessToken, int orderId) {
+    public OrderRequest(String accessToken, long orderId) {
         super(Order.class, APIInterface.class);
         this.mAccessToken = accessToken;
         this.mOrderId = orderId;

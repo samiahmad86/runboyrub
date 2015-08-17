@@ -35,7 +35,7 @@ public interface APIInterface {
             "X-Device-Type: android"
     })
     @GET("/order/")
-    Order getOrder(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken, @Query(Constants.Keys.KEY_ORDER_ID) int orderId, @Query("timestamp") long timeStamp);
+    Order getOrder(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken, @Query(Constants.Keys.KEY_ORDER_ID) long orderId, @Query("timestamp") long timeStamp);
 
     @Headers({
             "Content-Type: application/json"

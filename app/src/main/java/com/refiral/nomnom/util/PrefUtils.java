@@ -82,4 +82,11 @@ public class PrefUtils {
         mEditor.remove(Constants.Keys.KEY_ORDER_ID).commit();
     }
 
+    public static void orderIsInProgress(boolean val) {
+        mEditor.putBoolean(Constants.Keys.KEY_ORDER_PROGRESS, val).commit();
+    }
+
+    public static boolean isOrderInProgress() {
+        return mSharedPrefs.getBoolean(Constants.Keys.KEY_ORDER_PROGRESS, false);
+    }
 }

@@ -28,6 +28,7 @@ import com.refiral.nomnom.config.Constants;
 import com.refiral.nomnom.model.Order;
 import com.refiral.nomnom.model.SimpleResponse;
 import com.refiral.nomnom.request.StatusRequest;
+import com.refiral.nomnom.util.DeviceUtils;
 import com.refiral.nomnom.util.PrefUtils;
 
 import java.io.File;
@@ -263,9 +264,17 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                             paymentViaCash = "0";
                         }
 
-                        if (Double.parseDouble(paymentViaCard) + Double.parseDouble(paymentViaCash) != Double.parseDouble(getOrder().totalAmount)) {
+                        double diff = Double.parseDouble(paymentViaCard) + Double.parseDouble(paymentViaCash)
+                                - Double.parseDouble(getOrder().totalAmount);
 
-                            Toast.makeText(getActivity(), "Enter valid amount", Toast.LENGTH_SHORT).show();
+                        if (diff > 1 || diff < -1) {
+                            String message = null;
+                            if (diff < 0) {
+                                message = "You must add Rupees " + Math.abs(diff) + " more";
+                            } else {
+                                message = "You must remove Rupees " + diff + " from the order";
+                            }
+                            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
                             view.setEnabled(true);
                             return;
                         }
@@ -317,6 +326,7 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                     btnStatus.setEnabled(true);
                 }
                 code = Constants.Values.STATUS_ARRIVED_AT_RESTAURANT;
+                fil.onFragmentInteraction(code, null);
                 break;
             }
             case Constants.Values.STATUS_ARRIVED_AT_RESTAURANT: {
@@ -349,8 +359,11 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                 PrefUtils.setStatus(Constants.Values.STATUS_PLACEHOLDER);
                 PrefUtils.deleteOrder();
                 PrefUtils.deleteCurrentOrderID();
+                PrefUtils.orderIsInProgress(false);
                 ((BaseActivity) getActivity()).getSupportActionBar().setTitle(R.string.app_name);
                 fil.onFragmentInteraction(Constants.Values.STATUS_PLACEHOLDER, null);
+                // clear all the cached data
+                DeviceUtils.deleteCache(getActivity());
                 break;
             }
         }
@@ -363,7 +376,7 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
     }
 
     private Order getOrder() {
-        if (order == null) {
+        if (code == Constants.Values.STATUS_CONFIRMED || order == null) {
             String json = PrefUtils.getOrder();
             if (json != null) {
                 Log.d(TAG, json);

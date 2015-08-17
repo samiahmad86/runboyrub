@@ -76,13 +76,11 @@ public class CameraFragment extends BaseFragment implements SurfaceHolder.Callba
 
         parameters.setPreviewSize(size.width, size.height);
 
-        if(display.getRotation() == Surface.ROTATION_0)
-        {
+        if (display.getRotation() == Surface.ROTATION_0) {
             mCamera.setDisplayOrientation(90);
             parameters.setRotation(90);
         }
-        if(display.getRotation() == Surface.ROTATION_270)
-        {
+        if (display.getRotation() == Surface.ROTATION_270) {
             mCamera.setDisplayOrientation(180);
             parameters.setRotation(180);
         }
@@ -127,7 +125,11 @@ public class CameraFragment extends BaseFragment implements SurfaceHolder.Callba
         int id = view.getId();
         switch (id) {
             case R.id.iv_bada_gola: {
-                mCamera.takePicture(null, null, this);
+                try {
+                    mCamera.takePicture(null, null, this);
+                } catch (RuntimeException re) {
+                    refreshCamera();
+                }
                 break;
             }
 
@@ -150,7 +152,7 @@ public class CameraFragment extends BaseFragment implements SurfaceHolder.Callba
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        if(file.exists()) {
+        if (file.exists()) {
             PrefUtils.setStatus(Constants.Values.STATUS_PICKUP_CONFIRM_PHOTO);
             PrefUtils.setBillPhoto(file.getAbsolutePath());
             fil.onFragmentInteraction(Constants.Values.STATUS_PICKUP_CONFIRM_PHOTO, null);

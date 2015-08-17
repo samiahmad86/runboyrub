@@ -29,6 +29,7 @@ import com.refiral.nomnom.request.LogoutRequest;
 import com.refiral.nomnom.service.CustomService;
 import com.refiral.nomnom.service.NotificationService;
 import com.refiral.nomnom.util.AlarmUtils;
+import com.refiral.nomnom.util.DeviceUtils;
 import com.refiral.nomnom.util.PrefUtils;
 
 /**
@@ -53,7 +54,7 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
 
         long orderId = PrefUtils.getCurrentOrderID();
 
-        if (orderId != -1) {
+        if (orderId != -1 && PrefUtils.getStatus() != Constants.Values.STATUS_PLACEHOLDER) {
             getSupportActionBar().setTitle("Order ID : " + orderId);
         }
 
@@ -64,10 +65,9 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
         LocalBroadcastManager.getInstance(this).
                 registerReceiver(brOrder, new IntentFilter(getResources().getString(R.string.intent_filter_order)));
 
-        Log.d(TAG, "token " + PrefUtils.getAccessToken());
-
         Intent intent = getIntent();
         String previousClassName = intent.getStringExtra(Constants.Keys.STARTER_CLASS);
+
         if (previousClassName.equals(NotificationService.TAG)) {
             Log.d(TAG, "Order ID : " + intent.getStringExtra(Constants.Keys.KEY_ORDER_ID));
             // stop the notification service
@@ -142,8 +142,10 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
                             PrefUtils.deleteGcmToken();
                             PrefUtils.deleteCurrentOrderID();
                             PrefUtils.deleteOrder();
+                            PrefUtils.orderIsInProgress(false);
                             PrefUtils.setStatus(Constants.Values.STATUS_PLACEHOLDER);
                             Router.startSplashActivity(HomeActivity.this, TAG);
+                            DeviceUtils.deleteCache(HomeActivity.this);
                             HomeActivity.this.finish();
                         }
                     });

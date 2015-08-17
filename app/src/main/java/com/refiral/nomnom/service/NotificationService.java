@@ -112,7 +112,7 @@ public class NotificationService extends Service {
             } catch (Exception ex) {
                 Log.d(TAG, "something went wrong");
             }
-            NotificationService.this.stopSelf(id);
+            NotificationService.this.stopSelf();
         }
     };
 }

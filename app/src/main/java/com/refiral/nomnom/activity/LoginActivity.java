@@ -42,6 +42,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
             if (savedInstanceState.containsKey("ProgressBar")) {
                 if (savedInstanceState.getInt("ProgressBar") == View.VISIBLE) {
                     findViewById(R.id.pb_login).setVisibility(View.VISIBLE);
+                    findViewById(R.id.btn_login).setEnabled(false);
                 }
             }
             return;
@@ -110,7 +111,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
             public void onRequestFailure(SpiceException spiceException) {
                 // fuck this shit
                 button.setEnabled(true);
-                pb.setVisibility(View.VISIBLE);
+                pb.setVisibility(View.GONE);
                 Log.d(TAG, "failed to login");
                 Log.d(TAG, spiceException.getMessage());
                 Log.d(TAG, spiceException.getLocalizedMessage());
