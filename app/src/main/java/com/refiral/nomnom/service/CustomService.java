@@ -33,6 +33,7 @@ public class CustomService extends Service implements GoogleApiClient.Connection
     // The actions the intent service can perform
     public static final String ACTION_LOC = "com.refiral.nomnom.service.action.LOC";
     public static final String ACTION_ORDER = "com.refiral.nomnom.service.action.ORDER";
+    public static final String ACTION_PHOTO = "com.refiral.nomnom.service.action.PHOTO";
 
     public static final String TAG = CustomService.class.getName();
 
@@ -76,6 +77,9 @@ public class CustomService extends Service implements GoogleApiClient.Connection
             } else if (ACTION_ORDER.equals(action)) {
                 getOrder(intent.getLongExtra(Constants.Keys.KEY_ORDER_ID, -1L), intent.getStringExtra(Constants.Keys.KEY_STATUS));
                 return START_STICKY;
+            } else if(ACTION_PHOTO.equals(action)) {
+                uploadImage(intent.getStringExtra(Constants.Keys.KEY_BILL_PHOTO), intent.getLongExtra(Constants.Keys.KEY_ORDER_ID, -1));
+                return START_REDELIVER_INTENT;
             }
         }
         return START_NOT_STICKY;
@@ -136,7 +140,7 @@ public class CustomService extends Service implements GoogleApiClient.Connection
                 String orderJSON = gson.toJson(order);
                 Log.d(TAG, orderJSON);
                 // start the service to build the notification if the order is new
-                if(status != null && status.equalsIgnoreCase(Constants.Values.ORDER_STATUS_NEW)) {
+                if (status != null && status.equalsIgnoreCase(Constants.Values.ORDER_STATUS_NEW)) {
                     Intent iNotificationService = new Intent(CustomService.this, NotificationService.class);
                     iNotificationService.setAction(TAG);
                     startService(iNotificationService);
@@ -149,5 +153,9 @@ public class CustomService extends Service implements GoogleApiClient.Connection
                 CustomService.this.stopSelf();
             }
         });
+    }
+
+    private void uploadImage(String filePath, long orderId) {
+
     }
 }

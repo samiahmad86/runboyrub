@@ -1,6 +1,8 @@
 package com.refiral.nomnom.fragment;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.hardware.Camera;
 import android.os.Bundle;
@@ -20,6 +22,7 @@ import com.refiral.nomnom.config.Constants;
 import com.refiral.nomnom.util.DeviceUtils;
 import com.refiral.nomnom.util.PrefUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -140,12 +143,15 @@ public class CameraFragment extends BaseFragment implements SurfaceHolder.Callba
     public void onPictureTaken(byte[] bytes, Camera camera) {
         File billFolder = new File(Environment.getExternalStorageDirectory().toString(), "temp");
         billFolder.mkdirs();
+        Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.JPEG, 70, baos);
         String billFile = "bill_" + System.currentTimeMillis() + ".jpg";
         File file = new File(billFolder, billFile);
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(file.getPath());
-            fos.write(bytes);
+            fos.write(baos.toByteArray());
             fos.close();
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();

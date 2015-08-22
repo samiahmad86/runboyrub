@@ -32,6 +32,7 @@ import com.refiral.nomnom.R;
 import com.refiral.nomnom.activity.BaseActivity;
 import com.refiral.nomnom.adapter.OrderItemsAdapter;
 import com.refiral.nomnom.config.Constants;
+import com.refiral.nomnom.config.Router;
 import com.refiral.nomnom.model.Order;
 import com.refiral.nomnom.model.SimpleResponse;
 import com.refiral.nomnom.request.StatusRequest;
@@ -178,7 +179,7 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
             case Constants.Values.STATUS_DELIVERED: {
                 view = inflater.inflate(R.layout.fragment_delivered, container, false);
                 showKeyboard();
-                ((TextView) view.findViewById(R.id.tv_collectable_ammount)).setText(Html.fromHtml("<font color='#2876B4'>Collectable Ammount : </font> " + getOrder().totalAmount + " \u20B9"));
+                ((TextView) view.findViewById(R.id.tv_collectable_ammount)).setText(Html.fromHtml("<font color='#2876B4'>Amount to be collected : </font> " + getOrder().totalAmount + " \u20B9"));
                 view.findViewById(R.id.btn_status).setOnClickListener(this);
                 break;
             }
@@ -217,7 +218,6 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                     case Constants.Values.STATUS_CONFIRMED: {
                         StatusRequest sr = new StatusRequest(PrefUtils.getAccessToken(),
                                 getOrder().id, Constants.Values.STATUS_STR_CONFIRMED);
-                        Toast.makeText(getActivity(), "fuck", Toast.LENGTH_SHORT).show();
                         toggleProgressBar(true);
                         Log.d(TAG, "status request with order id : " + PrefUtils.getCurrentOrderID() +
                                 " token " + PrefUtils.getAccessToken() + " status " + Constants.Values.STATUS_STR_CONFIRMED);
@@ -318,6 +318,7 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                 if (getView() != null) {
                     getView().findViewById(R.id.iv_cancel).setEnabled(false);
                 }
+                Router.startPhotoUpload(getActivity(), PrefUtils.getBillPhoto(), getOrder().id);
                 toggleProgressBar(true);
                 mSpiceManager.execute(sr, this);
                 break;

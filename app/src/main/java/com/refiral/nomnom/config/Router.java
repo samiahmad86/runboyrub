@@ -22,8 +22,8 @@ public class Router {
 
     public static void startLoginActivity(Context context, String className, int flag) {
         Intent intent = new Intent(context, LoginActivity.class);
-        intent.putExtra(Constants.Keys.STARTER_CLASS,className);
-        if(flag != -1) {
+        intent.putExtra(Constants.Keys.STARTER_CLASS, className);
+        if (flag != -1) {
             intent.addFlags(flag);
         }
         context.startActivity(intent);
@@ -31,13 +31,13 @@ public class Router {
 
     public static void startHomeActivity(Context context, String className) {
         Intent intent = new Intent(context, HomeActivity.class);
-        intent.putExtra(Constants.Keys.STARTER_CLASS,className);
+        intent.putExtra(Constants.Keys.STARTER_CLASS, className);
         context.startActivity(intent);
     }
 
     public static void startSOSActivity(Context context, String className) {
         Intent intent = new Intent(context, SOSActivity.class);
-        intent.putExtra(Constants.Keys.STARTER_CLASS,className);
+        intent.putExtra(Constants.Keys.STARTER_CLASS, className);
         context.startActivity(intent);
     }
 
@@ -69,5 +69,13 @@ public class Router {
         Intent intent = new Intent(context, SplashActivity.class);
         intent.putExtra(Constants.Keys.STARTER_CLASS, className);
         context.startActivity(intent);
+    }
+
+    public static void startPhotoUpload(Context context, String billPhoto, long orderId) {
+        Intent intent = new Intent(context, CustomService.class);
+        intent.setAction(CustomService.ACTION_PHOTO);
+        intent.putExtra(Constants.Keys.KEY_ORDER_ID, orderId);
+        intent.putExtra(Constants.Keys.KEY_BILL_PHOTO, billPhoto);
+        context.startService(intent);
     }
 }

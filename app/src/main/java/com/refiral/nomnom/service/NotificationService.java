@@ -81,10 +81,9 @@ public class NotificationService extends Service {
                 mVibrator.vibrate(pattern, 0);
 
                 // set the alarm tone
-                Uri alarmToneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
                 AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
                 am.setStreamVolume(AudioManager.STREAM_MUSIC, 50, 0);
-                MediaPlayer player = MediaPlayer.create(this, alarmToneUri);
+                MediaPlayer player = MediaPlayer.create(this, R.raw.alarm_tone);
                 player.setLooping(true);
                 player.start();
                 hmMediaPlayer.put(startId, player);
