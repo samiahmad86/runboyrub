@@ -2,9 +2,15 @@ package com.refiral.nomnom.fragment;
 
 
 import android.app.Fragment;
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.Html;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -18,6 +24,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
@@ -32,6 +39,8 @@ import com.refiral.nomnom.util.DeviceUtils;
 import com.refiral.nomnom.util.PrefUtils;
 
 import java.io.File;
+
+import retrofit.mime.TypedFile;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -179,11 +188,19 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
 
 
     @Override
+    public void onStart() {
+        super.onStart();
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(brUpdateUi,
+                new IntentFilter(getActivity().getResources().getString(R.string.intent_filter_update_ui)));
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
         if (isKeyboardShown) {
             hideKeyboard();
         }
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(brUpdateUi);
     }
 
     @Override
@@ -198,8 +215,12 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                 switch (code) {
 
                     case Constants.Values.STATUS_CONFIRMED: {
-                        StatusRequest sr = new StatusRequest(PrefUtils.getAccessToken(), getOrder().id, Constants.Values.STATUS_STR_CONFIRMED);
+                        StatusRequest sr = new StatusRequest(PrefUtils.getAccessToken(),
+                                getOrder().id, Constants.Values.STATUS_STR_CONFIRMED);
+                        Toast.makeText(getActivity(), "fuck", Toast.LENGTH_SHORT).show();
                         toggleProgressBar(true);
+                        Log.d(TAG, "status request with order id : " + PrefUtils.getCurrentOrderID() +
+                                " token " + PrefUtils.getAccessToken() + " status " + Constants.Values.STATUS_STR_CONFIRMED);
                         mSpiceManager.execute(sr, this);
                         break;
                     }
@@ -219,15 +240,14 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                     case Constants.Values.STATUS_PICKUP_PAY: {
                         String amountPaid = ((EditText) getView().findViewById(R.id.et_payment_cash)).getText().toString();
                         if (amountPaid.length() == 0 || !isAmount(amountPaid)) {
-                            Toast.makeText(getActivity(), "Enter valild amount", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "Enter valid amount", Toast.LENGTH_SHORT).show();
                             view.setEnabled(true);
                             return;
                         }
-                        StatusRequest sr = new StatusRequest(PrefUtils.getAccessToken(), getOrder().id,
-                                Constants.Values.STATUS_STR_PICKUP, PrefUtils.getBillPhoto(), amountPaid);
-                        toggleProgressBar(true);
-                        mSpiceManager.execute(sr, this);
-//                        onRequestSuccess(null);
+                        PrefUtils.setAmount(amountPaid);
+//                        toggleProgressBar(true);
+//                        mSpiceManager.execute(sr, this);
+                        onRequestSuccess(null);
                         break;
                     }
 
@@ -280,7 +300,7 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                         }
 
                         StatusRequest sr = new StatusRequest(PrefUtils.getAccessToken(), getOrder().id,
-                                Constants.Values.STATUS_STR_DELIVERED, paymentViaCash, paymentViaCard, true, null, null);
+                                Constants.Values.STATUS_STR_DELIVERED, paymentViaCash, paymentViaCard, true, null);
                         toggleProgressBar(true);
                         mSpiceManager.execute(sr, this);
                         break;
@@ -291,8 +311,15 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
             }
 
             case R.id.iv_accept: {
-                PrefUtils.setStatus(Constants.Values.STATUS_PICKUP_PAY);
-                fil.onFragmentInteraction(Constants.Values.STATUS_PICKUP_PAY, null);
+//                TypedFile billPhoto = new TypedFile("image/jpeg", new File(PrefUtils.getBillPhoto()));
+                StatusRequest sr = new StatusRequest(PrefUtils.getAccessToken(), getOrder().id,
+                        Constants.Values.STATUS_STR_PICKUP, PrefUtils.getAmount());
+                view.setEnabled(false);
+                if (getView() != null) {
+                    getView().findViewById(R.id.iv_cancel).setEnabled(false);
+                }
+                toggleProgressBar(true);
+                mSpiceManager.execute(sr, this);
                 break;
             }
 
@@ -306,8 +333,41 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
 
     @Override
     public void onRequestFailure(SpiceException spiceException) {
+        String message = "Failed to update status with device id " + DeviceUtils.getDeviceID(getActivity())
+                + " gcm id " + PrefUtils.getGcmToken() + " error : " + spiceException.getMessage() +
+                " localized message : " + spiceException.getLocalizedMessage();
+        switch (code) {
+            case Constants.Values.STATUS_CONFIRMED: {
+                message = message + " while confirming order";
+                break;
+            }
+            case Constants.Values.STATUS_ARRIVED_AT_RESTAURANT: {
+                message = message + " arrived at restaurant";
+                break;
+            }
+            case Constants.Values.STATUS_PICKUP_PAY: {
+                message = message + " while paying restaurant";
+                break;
+            }
+            case Constants.Values.STATUS_REACHED_CUSTOMER_ADDRESS: {
+                message = message + " while arrived at customer address";
+                break;
+            }
+            case Constants.Values.STATUS_DELIVERED: {
+                message = message + " while delivering order";
+                break;
+            }
+        }
+        Crashlytics.log(message);
+
+
         if (getView() != null) {
-            getView().findViewById(R.id.btn_status).setEnabled(true);
+            if (code != Constants.Values.STATUS_PICKUP_CONFIRM_PHOTO) {
+                getView().findViewById(R.id.btn_status).setEnabled(true);
+            } else {
+                getView().findViewById(R.id.iv_accept).setEnabled(true);
+                getView().findViewById(R.id.iv_cancel).setEnabled(true);
+            }
             toggleProgressBar(false);
         }
     }
@@ -337,15 +397,22 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
             }
 
             case Constants.Values.STATUS_PICKUP_MATCH: {
-                PrefUtils.setStatus(Constants.Values.STATUS_PICKUP_PHOTO);
-                fil.onFragmentInteraction(Constants.Values.STATUS_PICKUP_PHOTO, null);
+                PrefUtils.setStatus(Constants.Values.STATUS_PICKUP_PAY);
+                fil.onFragmentInteraction(Constants.Values.STATUS_PICKUP_PAY, null);
                 break;
             }
 
             case Constants.Values.STATUS_PICKUP_PAY: {
                 toggleProgressBar(false);
+                PrefUtils.setStatus(Constants.Values.STATUS_PICKUP_PHOTO);
+                fil.onFragmentInteraction(Constants.Values.STATUS_PICKUP_PHOTO, null);
+                break;
+            }
+
+            case Constants.Values.STATUS_PICKUP_CONFIRM_PHOTO: {
                 PrefUtils.setStatus(Constants.Values.STATUS_REACHED_CUSTOMER_ADDRESS);
                 fil.onFragmentInteraction(Constants.Values.STATUS_REACHED_CUSTOMER_ADDRESS, null);
+                toggleProgressBar(false);
                 break;
             }
 
@@ -362,8 +429,6 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                 PrefUtils.orderIsInProgress(false);
                 ((BaseActivity) getActivity()).getSupportActionBar().setTitle(R.string.app_name);
                 fil.onFragmentInteraction(Constants.Values.STATUS_PLACEHOLDER, null);
-                // clear all the cached data
-                DeviceUtils.deleteCache(getActivity());
                 break;
             }
         }
@@ -409,5 +474,21 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
             }
         }
     }
+
+    private BroadcastReceiver brUpdateUi = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Intent iNotificationStop = new Intent(getResources().getString(R.string.intent_filter_notification));
+            int notifId = intent.getIntExtra(Constants.Keys.KEY_NOTIF_ID, 1);
+            iNotificationStop.putExtra(Constants.Keys.KEY_NOTIF_ID, notifId);
+            LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(iNotificationStop);
+            NotificationManager mNotificationManager =
+                    (NotificationManager) getActivity().
+                            getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotificationManager.cancel(notifId);
+            ((BaseActivity) getActivity()).getSupportActionBar().setTitle("Order ID : " + PrefUtils.getCurrentOrderID());
+            fil.onFragmentInteraction(PrefUtils.getStatus(), null);
+        }
+    };
 
 }

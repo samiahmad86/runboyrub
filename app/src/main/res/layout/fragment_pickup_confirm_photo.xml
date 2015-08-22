@@ -39,5 +39,8 @@
         android:layout_marginBottom="50dp"
         android:src="@drawable/btn_accept" />
 
+    <include
+        android:id="@+id/pb_home"
+        layout="@layout/layout_large_progress_bar"/>
 
 </RelativeLayout>

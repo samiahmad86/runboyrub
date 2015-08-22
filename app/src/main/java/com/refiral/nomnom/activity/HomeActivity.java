@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 import com.refiral.nomnom.R;
@@ -78,7 +79,6 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
             NotificationManager mNotificationManager =
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             mNotificationManager.cancel(notifId);
-            PrefUtils.setStatus(Constants.Values.STATUS_CONFIRMED);
         } else if (LoginActivity.TAG.equals(previousClassName)) {
             // trigger service to get location for the first time
             Intent iLocationService = new Intent(getApplicationContext(), CustomService.class);
@@ -145,7 +145,6 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
                             PrefUtils.orderIsInProgress(false);
                             PrefUtils.setStatus(Constants.Values.STATUS_PLACEHOLDER);
                             Router.startSplashActivity(HomeActivity.this, TAG);
-                            DeviceUtils.deleteCache(HomeActivity.this);
                             HomeActivity.this.finish();
                         }
                     });
@@ -177,7 +176,7 @@ public class HomeActivity extends BaseActivity implements FragmentInteractionLis
                     .commit();
         } else if (code == Constants.Values.STATUS_REACHED_CUSTOMER_ADDRESS) {
             Log.d(TAG, "popping back stack");
-            fm.popBackStack("" + Constants.Values.STATUS_PICKUP_PHOTO, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            fm.popBackStack("" + Constants.Values.STATUS_PICKUP_PAY, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             ft.replace(R.id.fl_home, CustomFragment.newInstance(code), "" + code)
                     .commit();
         } else {

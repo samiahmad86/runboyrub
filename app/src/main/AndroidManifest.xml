@@ -117,6 +117,9 @@
             android:name=".service.NotificationService"
             android:exported="false"></service>
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="ec3a945fd541783af4a0fb654ac96c608602af31" />
     </application>
 
 </manifest>

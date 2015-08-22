@@ -89,6 +89,11 @@ public class NotificationService extends Service {
                 player.start();
                 hmMediaPlayer.put(startId, player);
                 Log.d(TAG, "playing, startId " + startId);
+
+                PrefUtils.setStatus(Constants.Values.STATUS_CONFIRMED);
+                Intent iUpdateUI = new Intent(getResources().getString(R.string.intent_filter_update_ui));
+                iUpdateUI.putExtra(Constants.Keys.KEY_NOTIF_ID, startId);
+                LocalBroadcastManager.getInstance(this).sendBroadcast(iUpdateUI);
             }
         }
         return START_REDELIVER_INTENT;

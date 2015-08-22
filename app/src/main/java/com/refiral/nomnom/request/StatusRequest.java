@@ -3,8 +3,9 @@ package com.refiral.nomnom.request;
 import com.octo.android.robospice.request.retrofit.RetrofitSpiceRequest;
 import com.refiral.nomnom.model.APIInterface;
 import com.refiral.nomnom.model.SimpleResponse;
-
-import retrofit.mime.TypedFile;
+import com.refiral.nomnom.model.Status;
+import com.refiral.nomnom.model.StatusDelivered;
+import com.refiral.nomnom.model.StatusPayRestaurant;
 
 /**
  * Created by tanay on 8/8/15.
@@ -17,28 +18,27 @@ public class StatusRequest extends RetrofitSpiceRequest<SimpleResponse, APIInter
     private String mAmountPaidInCash;
     private String mAmountPaidViaCard;
     private boolean isPaid;     // for the customer
-    private String billPhoto; // photo of the bill taken when receiving the order from the Restaurant.
     private String totalAmt;
 
     public StatusRequest(String accessToken, long orderId, String deliveryStatus) {
-        this(accessToken, orderId, deliveryStatus, null, null, false, null, null);
+        this(accessToken, orderId, deliveryStatus, null, null, false,  null);
     }
 
-    public StatusRequest(String accessToken, long orderId, String deliveryStatus, String billPhoto, String amount) {
-        this(accessToken, orderId, deliveryStatus, null, null, false, billPhoto, amount);
+    public StatusRequest(String accessToken, long orderId, String deliveryStatus, String amount) {
+        this(accessToken, orderId, deliveryStatus, null, null, false, amount);
     }
 
 
 
-    public StatusRequest(String accessToken, long orderId, String deliveryStatus, String ammountPaidInCash, String ammountPaidViaCard, boolean isPaid, String billPhoto, String amount) {
+    public StatusRequest(String accessToken, long orderId, String deliveryStatus, String amountPaidInCash,
+                         String amountPaidViaCard, boolean isPaid, String amount) {
         super(SimpleResponse.class, APIInterface.class);
         this.mAccessToken = accessToken;
         this.mOrderId = orderId;
         this.mDeliveryStatus = deliveryStatus;
-        this.mAmountPaidViaCard = ammountPaidViaCard;
-        this.mAmountPaidInCash = ammountPaidInCash;
+        this.mAmountPaidViaCard = amountPaidViaCard;
+        this.mAmountPaidInCash = amountPaidInCash;
         this.isPaid = isPaid;
-        this.billPhoto = billPhoto;
         this.totalAmt = amount;
     }
 
@@ -46,11 +46,12 @@ public class StatusRequest extends RetrofitSpiceRequest<SimpleResponse, APIInter
     @Override
     public SimpleResponse loadDataFromNetwork() throws Exception {
         if(isPaid) {
-            return getService().updateStatusDelivered(mAccessToken, mOrderId, mDeliveryStatus, mAmountPaidViaCard, mAmountPaidInCash);
-        } else if(billPhoto == null) {
-            return getService().updateStatus(mAccessToken, mOrderId, mDeliveryStatus);
+            return getService().updateStatus(mAccessToken, new StatusDelivered(mOrderId, mDeliveryStatus,
+                    mAmountPaidViaCard, mAmountPaidInCash));
+        } else if(totalAmt == null) {
+            return getService().updateStatus(mAccessToken, new Status(mOrderId, mDeliveryStatus));
         } else {
-            return getService().updateStatus(mAccessToken, mOrderId, mDeliveryStatus, billPhoto, totalAmt);
+            return getService().updateStatus(mAccessToken, new StatusPayRestaurant(mOrderId, mDeliveryStatus, totalAmt));
         }
     }
 }

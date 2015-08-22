@@ -7,6 +7,7 @@
     <!-- intent filters -->
     <string name="intent_filter_notification">com.refiral.nomnom.notification</string>
     <string name="intent_filter_order">com.refiral.nomnom.order</string>
+    <string name="intent_filter_update_ui">com.refiral.nomnom.update</string>
 
     <!-- menu items -->
     <string name="action_logout">LOGOUT</string>

@@ -17,7 +17,7 @@ public class Constants {
         public static final String KEY_DELIVERY_STATUS = "delivery_status";
         public static final String KEY_PAYMENT_CARD = "payment_card";
         public static final String KEY_PAYMENT_CASH = "payment_cash";
-        public static final String KEY_AMOUNT_PAID = "amt_paid";
+        public static final String KEY_AMOUNT_PAID = "amount_paid";
         public static final String KEY_LATITUDE = "latitude";
         public static final String KEY_LONGITUDE = "longitude";
         public static final String KEY_NOTIF_ID = "notif_id";

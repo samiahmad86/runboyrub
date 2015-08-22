@@ -9,9 +9,7 @@ import retrofit.http.Header;
 import retrofit.http.Headers;
 import retrofit.http.POST;
 import retrofit.http.PUT;
-import retrofit.http.Part;
 import retrofit.http.Query;
-import retrofit.mime.TypedFile;
 
 /**
  * Created by tanay on 7/8/15.
@@ -22,7 +20,9 @@ public interface APIInterface {
             "Content-Type: application/json"
     })
     @POST("/agent_login/")
-    LoginResponse login(@Header(Constants.Keys.KEY_DEVICE_ID) String mDeviceID, @Header(Constants.Keys.KEY_DEVICE_TYPE) String mDeviceTpe, @Header(Constants.Keys.KEY_PUSH_ID) String mPushID, @Body User user);
+    LoginResponse login(@Header(Constants.Keys.KEY_DEVICE_ID) String mDeviceID,
+                        @Header(Constants.Keys.KEY_DEVICE_TYPE) String mDeviceTpe,
+                        @Header(Constants.Keys.KEY_PUSH_ID) String mPushID, @Body User user);
 
     @Headers({
             "Content-Type: application/json"
@@ -35,31 +35,34 @@ public interface APIInterface {
             "X-Device-Type: android"
     })
     @GET("/order/")
-    Order getOrder(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken, @Query(Constants.Keys.KEY_ORDER_ID) long orderId, @Query("timestamp") long timeStamp);
+    Order getOrder(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken,
+                   @Query(Constants.Keys.KEY_ORDER_ID) long orderId, @Query("timestamp") long timeStamp);
 
     @Headers({
             "Content-Type: application/json"
     })
     @PUT("/delivery/")
-    SimpleResponse updateStatus(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken, @Query(Constants.Keys.KEY_ORDER_ID) long orderID, @Query(Constants.Keys.KEY_DELIVERY_STATUS) String deliveryStatus);
+    SimpleResponse updateStatus(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken, @Body Status status);
 
     @Headers({
             "Content-Type: application/json"
     })
     @PUT("/delivery/")
-    SimpleResponse updateStatus(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken, @Query(Constants.Keys.KEY_ORDER_ID) long orderID, @Query(Constants.Keys.KEY_DELIVERY_STATUS) String deliveryStatus, @Query(Constants.Keys.KEY_BILL_PHOTO) String billImage, @Query(Constants.Keys.KEY_AMOUNT_PAID) String ammount);
-
+    SimpleResponse updateStatus(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken,
+                                @Body StatusDelivered statusPayRestaurant);
 
     @Headers({
             "Content-Type: application/json"
     })
     @PUT("/delivery/")
-    SimpleResponse updateStatusDelivered(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken, @Query(Constants.Keys.KEY_ORDER_ID) long orderID, @Query(Constants.Keys.KEY_DELIVERY_STATUS) String deliveryStatus, @Query(Constants.Keys.KEY_PAYMENT_CARD) String cardPayment, @Query(Constants.Keys.KEY_PAYMENT_CASH) String cashPayment);
+    SimpleResponse updateStatus(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken,
+                                @Body StatusPayRestaurant statusDelivered);
 
     @Headers({
             "Content-Type: application/json"
     })
     @POST("/delivery_boy/")
-    SimpleResponse updateLocation(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken, @Body DeliveryBoyLocation location);
+    SimpleResponse updateLocation(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken,
+                                  @Body DeliveryBoyLocation location);
 
 }

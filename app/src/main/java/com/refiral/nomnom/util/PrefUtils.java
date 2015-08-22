@@ -89,4 +89,12 @@ public class PrefUtils {
     public static boolean isOrderInProgress() {
         return mSharedPrefs.getBoolean(Constants.Keys.KEY_ORDER_PROGRESS, false);
     }
+
+    public static void setAmount(String amount) {
+        mEditor.putString(Constants.Keys.KEY_AMOUNT_PAID, amount).commit();
+    }
+
+    public static String getAmount() {
+        return mSharedPrefs.getString(Constants.Keys.KEY_AMOUNT_PAID, null);
+    }
 }

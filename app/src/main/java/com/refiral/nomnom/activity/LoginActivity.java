@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 import com.refiral.nomnom.R;
@@ -110,11 +111,13 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
             @Override
             public void onRequestFailure(SpiceException spiceException) {
                 // fuck this shit
+                String message = "Failed to login with device id " + DeviceUtils.getDeviceID(LoginActivity.this)
+                        + " gcm id " + PrefUtils.getGcmToken() + " error : " + spiceException.getMessage() +
+                        " localized message : " + spiceException.getLocalizedMessage();
+                Crashlytics.getInstance().core.log(message);
+                Log.d(TAG, message);
                 button.setEnabled(true);
                 pb.setVisibility(View.GONE);
-                Log.d(TAG, "failed to login");
-                Log.d(TAG, spiceException.getMessage());
-                Log.d(TAG, spiceException.getLocalizedMessage());
             }
 
             @Override
