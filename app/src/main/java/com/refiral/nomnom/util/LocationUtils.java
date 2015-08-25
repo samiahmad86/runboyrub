@@ -3,11 +3,13 @@ package com.refiral.nomnom.util;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
+import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.refiral.nomnom.service.AddressIntentService;
 
 import java.io.IOException;
 import java.util.List;
@@ -55,19 +57,27 @@ public class LocationUtils {
      * @return {@link LatLng} instance to use in maps for destination
      */
     public static LatLng getLocationFromAddress(Context context, String address) {
+        Log.d(AddressIntentService.TAG, address);
         Geocoder mGeocoder = new Geocoder(context);
         try {
             List<Address> addresses = mGeocoder.getFromLocationName(address, 5);
             if (addresses == null) {
+                Log.d(AddressIntentService.TAG, "addresses are null");
                 return null;
+            } else {
+                Log.d(AddressIntentService.TAG, "addresses are not null");
             }
             if (addresses.size() > 0) {
                 return new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
+            } else {
+                Log.d(AddressIntentService.TAG, "addresses size is zero");
             }
         } catch (IOException ioe) {
             ioe.printStackTrace();
+            Log.d(AddressIntentService.TAG, "IOException");
             return null;
         }
+        Log.d(AddressIntentService.TAG, "returning null");
         return null;
     }
 }

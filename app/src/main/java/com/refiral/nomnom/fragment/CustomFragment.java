@@ -9,7 +9,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Html;
@@ -30,6 +32,13 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
@@ -44,10 +53,14 @@ import com.refiral.nomnom.model.Restaurant;
 import com.refiral.nomnom.model.SimpleResponse;
 import com.refiral.nomnom.request.StatusRequest;
 import com.refiral.nomnom.util.DeviceUtils;
+import com.refiral.nomnom.util.GMapV2Direction;
 import com.refiral.nomnom.util.LocationUtils;
 import com.refiral.nomnom.util.PrefUtils;
 
+import org.w3c.dom.Document;
+
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -110,7 +123,7 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                 btnStatus.setOnClickListener(this);
                 Button btnCall = (Button) view.findViewById(R.id.btn_call);
                 btnCall.setOnClickListener(this);
-                Router.startAddressIntentService(getActivity(), getOrder().restaurant.address);
+                Router.startAddressIntentService(getActivity(), getOrder().restaurant.address + ", Delhi");
                 break;
             }
             case Constants.Values.STATUS_CONFIRMED: {
@@ -218,7 +231,7 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
         if (fragmentType == Constants.Values.STATUS_PLACEHOLDER) {
             LocalBroadcastManager.getInstance(getActivity()).registerReceiver(brUpdateUi,
                     new IntentFilter(getActivity().getResources().getString(R.string.intent_filter_update_ui)));
-        } else if(fragmentType == Constants.Values.STATUS_REACHED_RESTAURANT || fragmentType == Constants.Values.STATUS_REACHED_CUSTOMER_ADDRESS) {
+        } else if (fragmentType == Constants.Values.STATUS_REACHED_RESTAURANT || fragmentType == Constants.Values.STATUS_REACHED_CUSTOMER_ADDRESS) {
             LocalBroadcastManager.getInstance(getActivity()).registerReceiver(brLocation,
                     new IntentFilter(getActivity().getResources().getString(R.string.intent_filter_location)));
         }
@@ -232,10 +245,10 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
         }
         if (fragmentType == Constants.Values.STATUS_PLACEHOLDER) {
             LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(brUpdateUi);
-        } else if (fragmentType == Constants.Values.STATUS_REACHED_CUSTOMER_ADDRESS || fragmentType == Constants.Values.STATUS_REACHED_RESTAURANT) {
+        } else if (fragmentType == Constants.Values.STATUS_DELIVERED|| fragmentType == Constants.Values.STATUS_PICKUP_MATCH) {
             LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(brLocation);
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             if (mGoogleApiClient.isConnected()) {
+                LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
                 mGoogleApiClient.disconnect();
             }
         }
@@ -506,8 +519,10 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
 
     @Override
     public void onConnected(Bundle bundle) {
-        Location currentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, LocationUtils.getLocationRequest(30 * 1000, 10 * 1000, 100), this);
+//        new DrawMap().execute(location.getLatitude(), location.getLongitude(), desLatitude, desLatitude);
+//        new DrawMap().execute(28.0, 77.0, 28.0, 77.5);
     }
 
     @Override
@@ -522,6 +537,10 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
 
     @Override
     public void onLocationChanged(Location location) {
+        new DrawMap().execute(location.getLatitude(), location.getLongitude(), desLatitude, desLongitude);
+        Log.d(TAG, "dest2 " + desLatitude + " " + desLongitude);
+
+//        new DrawMap().execute(28.0, 77.0, 28.0, 77.5);
 
     }
 
@@ -560,7 +579,6 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
         }
     }
 
-
     private BroadcastReceiver brUpdateUi = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -582,10 +600,11 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
         public void onReceive(Context context, Intent intent) {
             desLatitude = intent.getDoubleExtra(Constants.Keys.KEY_LATITUDE, 91);
             desLongitude = intent.getDoubleExtra(Constants.Keys.KEY_LONGITUDE, 181);
-            if(desLatitude == 91 || desLongitude == 181) {
-                if(fragmentType == Constants.Values.STATUS_REACHED_RESTAURANT) {
+            Log.d(TAG, "dest" + desLatitude + " " + desLongitude);
+            if (desLatitude == 91 || desLongitude == 181) {
+                if (fragmentType == Constants.Values.STATUS_REACHED_RESTAURANT) {
                     // TODO: update values for {@link CustomFragment#desLatitude} & {@link CustomFragment#desLongitude}
-                } else if(fragmentType == Constants.Values.STATUS_REACHED_CUSTOMER_ADDRESS) {
+                } else if (fragmentType == Constants.Values.STATUS_REACHED_CUSTOMER_ADDRESS) {
                     desLongitude = Double.parseDouble(getOrder().address.locality.longitude);
                     desLatitude = Double.parseDouble(getOrder().address.locality.latitude);
                 }
@@ -596,4 +615,47 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
         }
     };
 
+
+    public class DrawMap extends AsyncTask<Double, Void, Document> {
+
+        private GMapV2Direction gmd;
+        private LatLng startLatLng, desLatLng;
+
+        @Override
+        protected Document doInBackground(Double... params) {
+            gmd = new GMapV2Direction();
+            startLatLng = new LatLng(params[0], params[1]);
+            desLatLng = new LatLng(params[2], params[3]);
+            Log.d(TAG, "dest4 " + params[2] + " " + params[3]);
+            return gmd.getDocument(params[0], params[1], params[2], params[3]);
+        }
+
+        @Override
+        protected void onPostExecute(Document doc) {
+            SupportMapFragment smp = ((SupportMapFragment) getChildFragmentManager().
+                    findFragmentById(R.id.frag_map));
+            GoogleMap mGoogleMap = smp.getMap();
+            ArrayList<LatLng> directionPoints = gmd.getDirection(doc);
+            PolylineOptions rectLine = new PolylineOptions().width(3).color(Color.RED);
+
+            for (int i = 0; i < directionPoints.size(); i++) {
+                rectLine.add(directionPoints.get(i));
+            }
+
+            mGoogleMap.addPolyline(rectLine);
+
+            mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(startLatLng, 18.0f));
+
+            mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+            Log.d(TAG, "dest3 " + desLatLng.latitude + " " + desLatLng.longitude);
+            mGoogleMap.addMarker(new MarkerOptions().position(desLatLng)
+                    .title("Restaurant").visible(true)).
+                    setIcon(BitmapDescriptorFactory.fromResource(R.drawable.pointer));
+            mGoogleMap.addMarker(new MarkerOptions().position(startLatLng)
+                    .title("Current Position").visible(true)).
+                    setIcon(BitmapDescriptorFactory.fromResource(R.drawable.dot_blue));
+
+
+        }
+    }
 }

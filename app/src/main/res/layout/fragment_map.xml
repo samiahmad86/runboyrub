@@ -4,10 +4,10 @@
     android:layout_height="match_parent">
 
     <fragment
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:id="@+id/frag_map"
-        class="com.google.android.gms.maps.SupportMapFragment"/>
+        class="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,26 +20,31 @@
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/btn_call"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:background="@color/c2E78B5"
+            android:gravity="center"
             android:text="@string/call_customer"
-            android:textSize="15sp"
             android:textColor="@color/white"
-            android:gravity="center"/>
+            android:textSize="15sp" />
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/btn_status"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
+            android:layout_weight="1"
             android:background="@color/white"
+            android:gravity="center"
             android:text="@string/reached_customer_address"
-            android:textSize="15sp"
             android:textColor="@color/c2E78B5"
-            android:gravity="center"/>
+            android:textSize="15sp" />
 
     </LinearLayout>
+
+
+    <include
+        android:id="@+id/pb_home"
+        layout="@layout/layout_large_progress_bar"/>
 
 </RelativeLayout>
