@@ -21,10 +21,11 @@ public class Constants {
         public static final String KEY_LATITUDE = "latitude";
         public static final String KEY_LONGITUDE = "longitude";
         public static final String KEY_NOTIF_ID = "notif_id";
-        public static final String KEY_BILL_PHOTO = "bill_photo";
+        public static final String KEY_BILL_IMAGE = "bill_image";
         public static final String KEY_CONTACT_NUMBER = "contact_number";
         public static final String KEY_DELIVERY_BOY_STATUS = "delivery_boy_status";
         public static final String KEY_STATUS = "status";
+        public static final String KEY_ADDRESS = "address";
         public static final String KEY_ORDER_PROGRESS = "order_progress";
     }
 
@@ -32,7 +33,7 @@ public class Constants {
         public static final long FIVE_MINUTES_IN_MILLIS = 5 * 60 * 1000;
         public static final int STATUS_PLACEHOLDER = 0;
         public static final int STATUS_CONFIRMED = 1;
-        public static final int STATUS_ARRIVED_AT_RESTAURANT = 2;
+        public static final int STATUS_REACHED_RESTAURANT = 2;
         public static final int STATUS_PICKUP_MATCH = 3;
         public static final int STATUS_REACHED_CUSTOMER_ADDRESS = 4;
         public static final int STATUS_DELIVERED = 5;

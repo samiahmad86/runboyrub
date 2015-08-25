@@ -4,14 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
+import com.refiral.nomnom.R;
 import com.refiral.nomnom.activity.HomeActivity;
 import com.refiral.nomnom.activity.LoginActivity;
 import com.refiral.nomnom.activity.SOSActivity;
 import com.refiral.nomnom.activity.SplashActivity;
+import com.refiral.nomnom.service.AddressIntentService;
 import com.refiral.nomnom.service.CustomService;
 import com.refiral.nomnom.service.GCMRegisterIntentService;
-
-import java.net.URI;
 
 /**
  * Created by tanay on 7/8/15.
@@ -75,7 +75,14 @@ public class Router {
         Intent intent = new Intent(context, CustomService.class);
         intent.setAction(CustomService.ACTION_PHOTO);
         intent.putExtra(Constants.Keys.KEY_ORDER_ID, orderId);
-        intent.putExtra(Constants.Keys.KEY_BILL_PHOTO, billPhoto);
+        intent.putExtra(Constants.Keys.KEY_BILL_IMAGE, billPhoto);
+        context.startService(intent);
+    }
+
+    public static void startAddressIntentService(Context context, String address) {
+        Intent intent = new Intent(context, AddressIntentService.class);
+        intent.setAction(context.getResources().getString(R.string.intent_filter_location));
+        intent.putExtra(Constants.Keys.KEY_ADDRESS, address);
         context.startService(intent);
     }
 }

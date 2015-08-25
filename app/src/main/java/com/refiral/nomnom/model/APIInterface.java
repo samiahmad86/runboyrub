@@ -7,9 +7,12 @@ import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.Headers;
+import retrofit.http.Multipart;
 import retrofit.http.POST;
 import retrofit.http.PUT;
+import retrofit.http.Part;
 import retrofit.http.Query;
+import retrofit.mime.TypedFile;
 
 /**
  * Created by tanay on 7/8/15.
@@ -57,6 +60,25 @@ public interface APIInterface {
     @PUT("/delivery/")
     SimpleResponse updateStatus(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken,
                                 @Body StatusPayRestaurant statusDelivered);
+
+
+    @Headers({
+            "Content-Type: multipart/form-data",
+    })
+    @Multipart
+    @PUT("/bill_image/")
+    SimpleResponse uploadImage(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken,
+                                @Part(Constants.Keys.KEY_ORDER_ID) long orderId,
+                               @Part(Constants.Keys.KEY_BILL_IMAGE) TypedFile billImage);
+
+    @Headers({
+            "Content-Type: multipart/form-data",
+    })
+    @Multipart
+    @PUT("/bill_image/")
+    SimpleResponse uploadImage(@Header(Constants.Keys.KEY_ACCESS_TOKEN) String accessToken,
+                               @Part(Constants.Keys.KEY_BILL_IMAGE) TypedFile billImage);
+
 
     @Headers({
             "Content-Type: application/json"

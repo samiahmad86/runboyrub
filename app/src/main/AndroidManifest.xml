@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.refiral.nomnom">
+    package="com.refiral.nomnom" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -30,30 +30,27 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".activity.SplashActivity"
             android:label="@string/app_name"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
-            android:noHistory="true">
+            android:noHistory="true"
+            android:theme="@style/Theme.AppCompat.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".activity.LoginActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar"
             android:windowSoftInputMode="stateVisible" />
-
         <activity
             android:name=".activity.SOSActivity"
             android:label="@string/title_activity_sos" />
-
         <activity
             android:name=".activity.HomeActivity"
             android:label="@string/app_name"
@@ -61,14 +58,14 @@
             android:theme="@style/Theme.AppCompat.NoActionBar"
             android:windowSoftInputMode="adjustPan" />
 
-
         <!-- GCM implementation -->
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"
-            android:permission="com.google.android.c2dm.permission.SEND">
+            android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+
                 <category android:name="com.refiral.nomnom" />
             </intent-filter>
         </receiver>
@@ -77,7 +74,7 @@
 
         <service
             android:name=".service.CustomGCMListenerService"
-            android:exported="false">
+            android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
@@ -87,39 +84,44 @@
 
         <service
             android:name=".service.GCMTokenRefreshService"
-            android:exported="false">
+            android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
-
         <service
             android:name=".service.GCMRegisterIntentService"
             android:exported="false" />
 
         <!-- May be needed in the future -->
 
-        <receiver android:name=".receiver.BootReceiver">
+        <receiver android:name=".receiver.BootReceiver" >
             <action android:name="android.intent.action.BOOT_COMPLETED" />
 
             <category android:name="android.intent.category.DEFAULT" />
         </receiver>
 
-
         <service
             android:name=".service.APIService"
             android:exported="false" />
-
         <service
             android:name=".service.CustomService"
             android:exported="false" />
         <service
             android:name=".service.NotificationService"
-            android:exported="false"></service>
+            android:exported="false" />
 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAsUmL2wQu4Uf6EKlDURE99xO1ywocmsT0" />
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="ec3a945fd541783af4a0fb654ac96c608602af31" />
+
+        <service
+            android:name=".service.AddressIntentService"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>

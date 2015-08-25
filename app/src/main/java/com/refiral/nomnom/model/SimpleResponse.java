@@ -7,5 +7,5 @@ import com.google.gson.annotations.SerializedName;
  */
 public class SimpleResponse {
     @SerializedName("Success")
-    public boolean success;
+    public String success;
 }

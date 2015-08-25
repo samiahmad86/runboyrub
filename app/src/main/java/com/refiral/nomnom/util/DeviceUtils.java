@@ -16,6 +16,13 @@ public class DeviceUtils {
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
+    /**
+     * the best resolution supported by the camera.
+     * @param sizes list of all the screen resolutions supported by the camera in the phone
+     * @param width of the ideal image
+     * @param height of the ideal image
+     * @return the optimal size
+     */
     public static Camera.Size getOptimalSize(List<Camera.Size> sizes, int width, int height) {
         if(sizes == null) {
             return null;

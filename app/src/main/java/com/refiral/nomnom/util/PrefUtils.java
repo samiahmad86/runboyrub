@@ -64,11 +64,11 @@ public class PrefUtils {
     }
 
     public static void setBillPhoto(String photo) {
-        mEditor.putString(Constants.Keys.KEY_BILL_PHOTO, photo).commit();
+        mEditor.putString(Constants.Keys.KEY_BILL_IMAGE, photo).commit();
     }
 
     public static String getBillPhoto() {
-        return mSharedPrefs.getString(Constants.Keys.KEY_BILL_PHOTO, null);
+        return mSharedPrefs.getString(Constants.Keys.KEY_BILL_IMAGE, null);
     }
 
     public static void setCurrentOrderID(long id) {

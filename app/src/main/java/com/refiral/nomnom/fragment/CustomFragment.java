@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Html;
@@ -25,6 +26,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
 import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
@@ -33,27 +38,31 @@ import com.refiral.nomnom.activity.BaseActivity;
 import com.refiral.nomnom.adapter.OrderItemsAdapter;
 import com.refiral.nomnom.config.Constants;
 import com.refiral.nomnom.config.Router;
+import com.refiral.nomnom.model.Customer;
 import com.refiral.nomnom.model.Order;
+import com.refiral.nomnom.model.Restaurant;
 import com.refiral.nomnom.model.SimpleResponse;
 import com.refiral.nomnom.request.StatusRequest;
 import com.refiral.nomnom.util.DeviceUtils;
+import com.refiral.nomnom.util.LocationUtils;
 import com.refiral.nomnom.util.PrefUtils;
 
 import java.io.File;
-
-import retrofit.mime.TypedFile;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link CustomFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CustomFragment extends BaseFragment implements View.OnClickListener, RequestListener<SimpleResponse>, TextView.OnEditorActionListener {
+public class CustomFragment extends BaseFragment implements View.OnClickListener, RequestListener<SimpleResponse>,
+        TextView.OnEditorActionListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_CODE = "code";
+    private static final String ARG_FRAGMENT_TYPE = "fragmentType";
     private static Order order;
-    private int code;
+    private int fragmentType;
     private static final String TAG = CustomFragment.class.getName();
+    private GoogleApiClient mGoogleApiClient;
+    private double desLatitude, desLongitude;
 
     /**
      * Use this factory method to create a new instance of
@@ -65,7 +74,7 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
     public static CustomFragment newInstance(int code) {
         CustomFragment fragment = new CustomFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_CODE, code);
+        args.putInt(ARG_FRAGMENT_TYPE, code);
         fragment.setArguments(args);
         return fragment;
     }
@@ -78,27 +87,36 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            code = getArguments().getInt(ARG_CODE);
+            fragmentType = getArguments().getInt(ARG_FRAGMENT_TYPE);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment based on the instance variable code
+        // Inflate the layout for this fragment based on the instance variable fragmentType
         View view = null;
 
-        switch (code) {
+        switch (fragmentType) {
             case Constants.Values.STATUS_PLACEHOLDER: {
                 view = inflater.inflate(R.layout.fragment_placeholder, container, false);
                 break;
             }
 
-            case Constants.Values.STATUS_CONFIRMED:
-            case Constants.Values.STATUS_ARRIVED_AT_RESTAURANT: {
+            case Constants.Values.STATUS_REACHED_RESTAURANT: {
+                view = inflater.inflate(R.layout.fragment_map, container, false);
+                Button btnStatus = (Button) view.findViewById(R.id.btn_status);
+                btnStatus.setText(getActivity().getResources().getString(R.string.reached_restaurant));
+                btnStatus.setOnClickListener(this);
+                Button btnCall = (Button) view.findViewById(R.id.btn_call);
+                btnCall.setOnClickListener(this);
+                Router.startAddressIntentService(getActivity(), getOrder().restaurant.address);
+                break;
+            }
+            case Constants.Values.STATUS_CONFIRMED: {
                 view = inflater.inflate(R.layout.fragment_arrived_confirmed, container, false);
                 Button btnStatus = (Button) view.findViewById(R.id.btn_status);
-                if (code == Constants.Values.STATUS_CONFIRMED) {
+                if (fragmentType == Constants.Values.STATUS_CONFIRMED) {
                     btnStatus.setText(getActivity().getResources().getString(R.string.accept_delivery));
                 } else {
                     btnStatus.setText(getActivity().getResources().getString(R.string.reached_restaurant));
@@ -109,12 +127,16 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                 ((TextView) vRest.findViewById(R.id.tv_details_heading)).
                         setText(getActivity().getResources().getString(R.string.restaurant_details));
                 if (getOrder().restaurant.numbers.size() > 0) {
-                    ((TextView) vRest.findViewById(R.id.tv_ph_no)).setText("Ph No. " + getOrder().restaurant.numbers.get(0).toString());
+                    ((TextView) vRest.findViewById(R.id.tv_ph_no)).setText(getActivity().getResources().getString(R.string.ph_number)
+                            + getOrder().restaurant.numbers.get(0).toString());
+                    ((TextView) vRest.findViewById(R.id.tv_ph_no)).setOnClickListener(this);
                 }
                 View vCust = view.findViewById(R.id.layout_customer);
                 ((TextView) vCust.findViewById(R.id.tv_name)).setText(getOrder().customer.name);
                 ((TextView) vCust.findViewById(R.id.tv_address)).setText(getOrder().address.completeAddress);
-                ((TextView) vCust.findViewById(R.id.tv_ph_no)).setText("Ph No. " + getOrder().customer.primaryNumber);
+                ((TextView) vCust.findViewById(R.id.tv_ph_no)).setText(getActivity().getResources().getString(R.string.ph_number)
+                        + getOrder().customer.primaryNumber);
+                ((TextView) vCust.findViewById(R.id.tv_ph_no)).setOnClickListener(this);
                 ((TextView) vCust.findViewById(R.id.tv_details_heading)).
                         setText(getActivity().getResources().getString(R.string.customer_details));
                 btnStatus.setOnClickListener(this);
@@ -166,7 +188,9 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                 View vCust = view.findViewById(R.id.layout_customer);
                 ((TextView) vCust.findViewById(R.id.tv_name)).setText(getOrder().customer.name);
                 ((TextView) vCust.findViewById(R.id.tv_address)).setText(getOrder().address.completeAddress);
-                ((TextView) vCust.findViewById(R.id.tv_ph_no)).setText("Ph No. " + getOrder().customer.primaryNumber);
+                ((TextView) vCust.findViewById(R.id.tv_ph_no)).setText(getActivity().getResources().getString(R.string.ph_number)
+                        + getOrder().customer.primaryNumber);
+                ((TextView) vCust.findViewById(R.id.tv_ph_no)).setOnClickListener(this);
                 ((TextView) vCust.findViewById(R.id.tv_details_heading)).
                         setText(getActivity().getResources().getString(R.string.customer_details));
                 ((ListView) view.findViewById(R.id.layout_order_list)).setAdapter(new OrderItemsAdapter(getActivity(), getOrder().orderItems));
@@ -191,8 +215,13 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
     @Override
     public void onStart() {
         super.onStart();
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(brUpdateUi,
-                new IntentFilter(getActivity().getResources().getString(R.string.intent_filter_update_ui)));
+        if (fragmentType == Constants.Values.STATUS_PLACEHOLDER) {
+            LocalBroadcastManager.getInstance(getActivity()).registerReceiver(brUpdateUi,
+                    new IntentFilter(getActivity().getResources().getString(R.string.intent_filter_update_ui)));
+        } else if(fragmentType == Constants.Values.STATUS_REACHED_RESTAURANT || fragmentType == Constants.Values.STATUS_REACHED_CUSTOMER_ADDRESS) {
+            LocalBroadcastManager.getInstance(getActivity()).registerReceiver(brLocation,
+                    new IntentFilter(getActivity().getResources().getString(R.string.intent_filter_location)));
+        }
     }
 
     @Override
@@ -201,7 +230,15 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
         if (isKeyboardShown) {
             hideKeyboard();
         }
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(brUpdateUi);
+        if (fragmentType == Constants.Values.STATUS_PLACEHOLDER) {
+            LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(brUpdateUi);
+        } else if (fragmentType == Constants.Values.STATUS_REACHED_CUSTOMER_ADDRESS || fragmentType == Constants.Values.STATUS_REACHED_RESTAURANT) {
+            LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(brLocation);
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+            if (mGoogleApiClient.isConnected()) {
+                mGoogleApiClient.disconnect();
+            }
+        }
     }
 
     @Override
@@ -213,7 +250,7 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                 view.setEnabled(false);
                 hideKeyboard();
 
-                switch (code) {
+                switch (fragmentType) {
 
                     case Constants.Values.STATUS_CONFIRMED: {
                         StatusRequest sr = new StatusRequest(PrefUtils.getAccessToken(),
@@ -225,7 +262,7 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                         break;
                     }
 
-                    case Constants.Values.STATUS_ARRIVED_AT_RESTAURANT: {
+                    case Constants.Values.STATUS_REACHED_RESTAURANT: {
                         StatusRequest sr = new StatusRequest(PrefUtils.getAccessToken(), getOrder().id, Constants.Values.STATUS_STR_ARRIVED);
                         toggleProgressBar(true);
                         mSpiceManager.execute(sr, this);
@@ -310,6 +347,26 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                 break;
             }
 
+            case R.id.btn_call: {
+                switch (fragmentType) {
+                    case Constants.Values.STATUS_REACHED_RESTAURANT: {
+                        Restaurant rest = getOrder().restaurant;
+                        if (rest.numbers.size() > 0) {
+                            Router.callNumber(getActivity(), getOrder().restaurant.numbers.get(0).toString());
+                        } else {
+                            Toast.makeText(getActivity(), "The number is unavailable", Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                    }
+                    case Constants.Values.STATUS_REACHED_CUSTOMER_ADDRESS: {
+                        Customer cus = getOrder().customer;
+                        Router.callNumber(getActivity(), cus.primaryNumber);
+                        break;
+                    }
+                }
+                break;
+            }
+
             case R.id.iv_accept: {
 //                TypedFile billPhoto = new TypedFile("image/jpeg", new File(PrefUtils.getBillPhoto()));
                 StatusRequest sr = new StatusRequest(PrefUtils.getAccessToken(), getOrder().id,
@@ -318,7 +375,8 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
                 if (getView() != null) {
                     getView().findViewById(R.id.iv_cancel).setEnabled(false);
                 }
-                Router.startPhotoUpload(getActivity(), PrefUtils.getBillPhoto(), getOrder().id);
+//                TODO: remove this when API gets fixed.
+//                Router.startPhotoUpload(getActivity(), PrefUtils.getBillPhoto(), getOrder().id);
                 toggleProgressBar(true);
                 mSpiceManager.execute(sr, this);
                 break;
@@ -327,6 +385,11 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
             case R.id.iv_cancel: {
                 getActivity().getSupportFragmentManager().popBackStack();
                 break;
+            }
+
+            case R.id.tv_ph_no: {
+                Router.callNumber(getActivity(), ((TextView) view).getText().toString().replace(getActivity().
+                        getResources().getString(R.string.ph_number), ""));
             }
         }
     }
@@ -337,12 +400,12 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
         String message = "Failed to update status with device id " + DeviceUtils.getDeviceID(getActivity())
                 + " gcm id " + PrefUtils.getGcmToken() + " error : " + spiceException.getMessage() +
                 " localized message : " + spiceException.getLocalizedMessage();
-        switch (code) {
+        switch (fragmentType) {
             case Constants.Values.STATUS_CONFIRMED: {
                 message = message + " while confirming order";
                 break;
             }
-            case Constants.Values.STATUS_ARRIVED_AT_RESTAURANT: {
+            case Constants.Values.STATUS_REACHED_RESTAURANT: {
                 message = message + " arrived at restaurant";
                 break;
             }
@@ -363,7 +426,7 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
 
 
         if (getView() != null) {
-            if (code != Constants.Values.STATUS_PICKUP_CONFIRM_PHOTO) {
+            if (fragmentType != Constants.Values.STATUS_PICKUP_CONFIRM_PHOTO) {
                 getView().findViewById(R.id.btn_status).setEnabled(true);
             } else {
                 getView().findViewById(R.id.iv_accept).setEnabled(true);
@@ -376,21 +439,21 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
     @Override
     public void onRequestSuccess(SimpleResponse simpleResponse) {
 
-        switch (code) {
+        switch (fragmentType) {
 
             case Constants.Values.STATUS_CONFIRMED: {
                 toggleProgressBar(false);
-                PrefUtils.setStatus(Constants.Values.STATUS_ARRIVED_AT_RESTAURANT);
+                PrefUtils.setStatus(Constants.Values.STATUS_REACHED_RESTAURANT);
                 if (getView() != null) {
                     Button btnStatus = (Button) getView().findViewById(R.id.btn_status);
                     (btnStatus).setText(getActivity().getResources().getString(R.string.reached_restaurant));
                     btnStatus.setEnabled(true);
                 }
-                code = Constants.Values.STATUS_ARRIVED_AT_RESTAURANT;
-                fil.onFragmentInteraction(code, null);
+                fragmentType = Constants.Values.STATUS_REACHED_RESTAURANT;
+                fil.onFragmentInteraction(fragmentType, null);
                 break;
             }
-            case Constants.Values.STATUS_ARRIVED_AT_RESTAURANT: {
+            case Constants.Values.STATUS_REACHED_RESTAURANT: {
                 toggleProgressBar(false);
                 PrefUtils.setStatus(Constants.Values.STATUS_PICKUP_MATCH);
                 fil.onFragmentInteraction(Constants.Values.STATUS_PICKUP_MATCH, null);
@@ -441,8 +504,29 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
         return false;
     }
 
+    @Override
+    public void onConnected(Bundle bundle) {
+        Location currentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, LocationUtils.getLocationRequest(30 * 1000, 10 * 1000, 100), this);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+
     private Order getOrder() {
-        if (code == Constants.Values.STATUS_CONFIRMED || order == null) {
+        if (fragmentType == Constants.Values.STATUS_CONFIRMED || order == null) {
             String json = PrefUtils.getOrder();
             if (json != null) {
                 Log.d(TAG, json);
@@ -476,6 +560,7 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
         }
     }
 
+
     private BroadcastReceiver brUpdateUi = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -489,6 +574,25 @@ public class CustomFragment extends BaseFragment implements View.OnClickListener
             mNotificationManager.cancel(notifId);
             ((BaseActivity) getActivity()).getSupportActionBar().setTitle("Order ID : " + PrefUtils.getCurrentOrderID());
             fil.onFragmentInteraction(PrefUtils.getStatus(), null);
+        }
+    };
+
+    private BroadcastReceiver brLocation = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            desLatitude = intent.getDoubleExtra(Constants.Keys.KEY_LATITUDE, 91);
+            desLongitude = intent.getDoubleExtra(Constants.Keys.KEY_LONGITUDE, 181);
+            if(desLatitude == 91 || desLongitude == 181) {
+                if(fragmentType == Constants.Values.STATUS_REACHED_RESTAURANT) {
+                    // TODO: update values for {@link CustomFragment#desLatitude} & {@link CustomFragment#desLongitude}
+                } else if(fragmentType == Constants.Values.STATUS_REACHED_CUSTOMER_ADDRESS) {
+                    desLongitude = Double.parseDouble(getOrder().address.locality.longitude);
+                    desLatitude = Double.parseDouble(getOrder().address.locality.latitude);
+                }
+            }
+            mGoogleApiClient = LocationUtils.buildGoogleApiClientObject(CustomFragment.this.getActivity(),
+                    CustomFragment.this, CustomFragment.this);
+            mGoogleApiClient.connect();
         }
     };
 

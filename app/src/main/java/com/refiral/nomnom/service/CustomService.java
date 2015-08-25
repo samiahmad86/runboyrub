@@ -18,9 +18,16 @@ import com.refiral.nomnom.config.Constants;
 import com.refiral.nomnom.model.DeliveryBoyLocation;
 import com.refiral.nomnom.model.Order;
 import com.refiral.nomnom.model.SimpleResponse;
+import com.refiral.nomnom.model.UploadImage;
 import com.refiral.nomnom.request.LocationRequest;
 import com.refiral.nomnom.request.OrderRequest;
+import com.refiral.nomnom.request.UploadRequest;
+import com.refiral.nomnom.util.LocationUtils;
 import com.refiral.nomnom.util.PrefUtils;
+
+import java.io.File;
+
+import retrofit.mime.TypedFile;
 
 /*
     This service is responsible for :
@@ -72,13 +79,15 @@ public class CustomService extends Service implements GoogleApiClient.Connection
         if (intent != null) {
             String action = intent.getAction();
             if (ACTION_LOC.equals(action)) {
-                buildGoogleApiClientObject();
+                mGoogleApiClient = LocationUtils.buildGoogleApiClientObject(this, this, this);
+                mGoogleApiClient.connect();
                 return START_STICKY;
             } else if (ACTION_ORDER.equals(action)) {
                 getOrder(intent.getLongExtra(Constants.Keys.KEY_ORDER_ID, -1L), intent.getStringExtra(Constants.Keys.KEY_STATUS));
                 return START_STICKY;
-            } else if(ACTION_PHOTO.equals(action)) {
-                uploadImage(intent.getStringExtra(Constants.Keys.KEY_BILL_PHOTO), intent.getLongExtra(Constants.Keys.KEY_ORDER_ID, -1));
+            } else if (ACTION_PHOTO.equals(action)) {
+                uploadImage(intent.getStringExtra(Constants.Keys.KEY_BILL_IMAGE),
+                        intent.getLongExtra(Constants.Keys.KEY_ORDER_ID, -1), startId);
                 return START_REDELIVER_INTENT;
             }
         }
@@ -117,15 +126,6 @@ public class CustomService extends Service implements GoogleApiClient.Connection
 
     }
 
-    private void buildGoogleApiClientObject() {
-        mGoogleApiClient = new GoogleApiClient.Builder(CustomService.this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-        mGoogleApiClient.connect();
-    }
-
     private void getOrder(long orderId, final String status) {
         Log.d(TAG, "sending order request with id " + orderId);
         final OrderRequest or = new OrderRequest(PrefUtils.getAccessToken(), orderId);
@@ -155,7 +155,20 @@ public class CustomService extends Service implements GoogleApiClient.Connection
         });
     }
 
-    private void uploadImage(String filePath, long orderId) {
+    private void uploadImage(String filePath, long orderId, final int startId) {
+        UploadRequest ur = new UploadRequest(new UploadImage(orderId,
+                new TypedFile("image/jpeg", new File(filePath))));
+        spiceManager.execute(ur, new RequestListener<SimpleResponse>() {
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
 
+            }
+
+            @Override
+            public void onRequestSuccess(SimpleResponse simpleResponse) {
+                Log.d(TAG, simpleResponse.success);
+                CustomService.this.stopSelf(startId);
+            }
+        });
     }
 }
